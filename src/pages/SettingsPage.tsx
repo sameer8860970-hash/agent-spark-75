@@ -106,19 +106,19 @@ const SettingsPage = () => {
         {settingsMenu.map((item, i) => (
           <motion.button
             key={item.key}
-            initial={{ opacity: 0, y: 4 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.015 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30, delay: i * 0.02 }}
             onClick={() => setActiveSection(item.key)}
+            whileTap={{ scale: 0.97 }}
             className="w-full flex items-center gap-3.5 pl-4 pr-3 py-[11px] hover:bg-accent/60 transition-colors active:bg-accent border-b border-border/40 last:border-b-0"
           >
-            <div className={`w-[34px] h-[34px] rounded-full ${item.color} flex items-center justify-center flex-shrink-0`}>
-              <item.icon size={17} className="text-primary-foreground" strokeWidth={1.8} />
-            </div>
+            <item.icon size={20} className="text-muted-foreground flex-shrink-0" strokeWidth={1.6} />
             <div className="flex-1 text-left min-w-0">
               <p className="text-[14px] font-normal text-foreground leading-tight">{item.label}</p>
               <p className="text-[11.5px] text-muted-foreground truncate leading-tight mt-0.5">{item.description}</p>
             </div>
+            <ChevronRight size={16} className="text-muted-foreground/50 flex-shrink-0" />
           </motion.button>
         ))}
       </div>
