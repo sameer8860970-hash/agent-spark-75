@@ -2,11 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Check, ExternalLink } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
+import { useNavigate } from "react-router-dom";
+import ConnectionCard from "@/components/ConnectionCard";
+import type { Integration } from "@/context/PlatformContext";
 
 const IntegrationsPage = () => {
   const { integrations, toggleIntegration } = usePlatform();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [connectingIntegration, setConnectingIntegration] = useState<Integration | null>(null);
 
   const categories = ["All", ...Array.from(new Set(integrations.map((i) => i.category)))];
   const filtered = integrations.filter(
@@ -16,6 +21,13 @@ const IntegrationsPage = () => {
   );
 
   const connectedCount = integrations.filter((i) => i.connected).length;
+
+  const handleConnect = (integration: Integration) => {
+    toggleIntegration(integration.id);
+    if (!integration.connected) {
+      setConnectingIntegration({ ...integration, connected: true });
+    }
+  };
 
   return (
     <div className="flex-1 p-6 overflow-auto">
@@ -67,12 +79,20 @@ const IntegrationsPage = () => {
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <motion.span
-                    whileHover={{ scale: 1.15, rotate: 5 }}
-                    className="text-2xl"
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 3 }}
+                    className="w-10 h-10 rounded-xl border border-border bg-agent-surface flex items-center justify-center overflow-hidden"
                   >
-                    {integration.icon}
-                  </motion.span>
+                    <img
+                      src={integration.logo}
+                      alt={integration.name}
+                      className="w-5 h-5"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                        (e.target as HTMLImageElement).parentElement!.innerHTML = `<span class="text-xl">${integration.icon}</span>`;
+                      }}
+                    />
+                  </motion.div>
                   <div>
                     <h3 className="font-medium text-foreground text-sm">{integration.name}</h3>
                     <p className="text-xs text-muted-foreground">{integration.category}</p>
@@ -95,7 +115,7 @@ const IntegrationsPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => toggleIntegration(integration.id)}
+                  onClick={() => handleConnect(integration)}
                   className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                     integration.connected
                       ? "bg-status-failed-bg text-status-failed hover:opacity-80"
@@ -112,6 +132,20 @@ const IntegrationsPage = () => {
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Connection success card */}
+      <AnimatePresence>
+        {connectingIntegration && (
+          <ConnectionCard
+            integration={connectingIntegration}
+            onClose={() => setConnectingIntegration(null)}
+            onGoTo={() => {
+              setConnectingIntegration(null);
+              navigate("/settings");
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
