@@ -11,20 +11,20 @@ import ChatMarkdown from "@/components/ChatMarkdown";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 const settingsMenu = [
-  { key: "profile", icon: User, label: "Account", description: "Name, Email, Bio", color: "bg-[hsl(210,80%,55%)]" },
-  { key: "brain", icon: Brain, label: "Agent Brain", description: "Persona, Memory, Guardrails", color: "bg-[hsl(280,70%,55%)]" },
-  { key: "knowledge", icon: FileText, label: "Knowledge & Files", description: "Documents, Context", color: "bg-[hsl(35,90%,55%)]" },
-  { key: "connectors", icon: Link2, label: "Connectors", description: "Integrations, APIs", color: "bg-[hsl(145,65%,45%)]" },
-  { key: "tasks", icon: Clock, label: "Tasks & Automations", description: "Schedules, Triggers", color: "bg-[hsl(200,80%,50%)]" },
-  { key: "api", icon: Key, label: "Secrets & Keys", description: "API Keys, Tokens", color: "bg-[hsl(340,70%,55%)]" },
-  { key: "security", icon: Shield, label: "Privacy & Security", description: "2FA, Sessions, Audit", color: "bg-[hsl(145,65%,45%)]" },
-  { key: "notifications", icon: Bell, label: "Notifications", description: "Sounds, Alerts, Badges", color: "bg-[hsl(0,75%,55%)]" },
-  { key: "observability", icon: Activity, label: "Observability", description: "Logs, Metrics", color: "bg-[hsl(160,60%,45%)]" },
-  { key: "billing", icon: CreditCard, label: "Billing", description: "Plan, Usage", color: "bg-[hsl(260,60%,55%)]" },
-  { key: "devices", icon: Smartphone, label: "Devices", description: "Manage connected devices", color: "bg-[hsl(210,70%,50%)]" },
-  { key: "appearance", icon: Palette, label: "Appearance", description: "Theme, Layout", color: "bg-[hsl(25,85%,55%)]" },
-  { key: "data", icon: Download, label: "Data & Export", description: "Backup, Export", color: "bg-[hsl(190,70%,45%)]" },
-  { key: "language", icon: Globe, label: "Language", description: "English", color: "bg-[hsl(280,55%,60%)]" },
+  { key: "profile", icon: User, label: "Account", description: "Name, Email, Bio" },
+  { key: "brain", icon: Brain, label: "Agent Brain", description: "Persona, Memory, Guardrails" },
+  { key: "knowledge", icon: FileText, label: "Knowledge & Files", description: "Documents, Context" },
+  { key: "connectors", icon: Link2, label: "Connectors", description: "Integrations, APIs" },
+  { key: "tasks", icon: Clock, label: "Tasks & Automations", description: "Schedules, Triggers" },
+  { key: "api", icon: Key, label: "Secrets & Keys", description: "API Keys, Tokens" },
+  { key: "security", icon: Shield, label: "Privacy & Security", description: "2FA, Sessions, Audit" },
+  { key: "notifications", icon: Bell, label: "Notifications", description: "Sounds, Alerts, Badges" },
+  { key: "observability", icon: Activity, label: "Observability", description: "Logs, Metrics" },
+  { key: "billing", icon: CreditCard, label: "Billing", description: "Plan, Usage" },
+  { key: "devices", icon: Smartphone, label: "Devices", description: "Manage connected devices" },
+  { key: "appearance", icon: Palette, label: "Appearance", description: "Theme, Layout" },
+  { key: "data", icon: Download, label: "Data & Export", description: "Backup, Export" },
+  { key: "language", icon: Globe, label: "Language", description: "English" },
 ];
 
 const SettingsPage = () => {
@@ -106,19 +106,19 @@ const SettingsPage = () => {
         {settingsMenu.map((item, i) => (
           <motion.button
             key={item.key}
-            initial={{ opacity: 0, y: 4 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.015 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30, delay: i * 0.02 }}
             onClick={() => setActiveSection(item.key)}
+            whileTap={{ scale: 0.97 }}
             className="w-full flex items-center gap-3.5 pl-4 pr-3 py-[11px] hover:bg-accent/60 transition-colors active:bg-accent border-b border-border/40 last:border-b-0"
           >
-            <div className={`w-[34px] h-[34px] rounded-full ${item.color} flex items-center justify-center flex-shrink-0`}>
-              <item.icon size={17} className="text-primary-foreground" strokeWidth={1.8} />
-            </div>
+            <item.icon size={20} className="text-muted-foreground flex-shrink-0" strokeWidth={1.6} />
             <div className="flex-1 text-left min-w-0">
               <p className="text-[14px] font-normal text-foreground leading-tight">{item.label}</p>
               <p className="text-[11.5px] text-muted-foreground truncate leading-tight mt-0.5">{item.description}</p>
             </div>
+            <ChevronRight size={16} className="text-muted-foreground/50 flex-shrink-0" />
           </motion.button>
         ))}
       </div>
@@ -455,11 +455,11 @@ const SettingsPage = () => {
     <div className="flex-1 flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {activeSection ? (
-          <motion.div key="detail" initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 60, opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col overflow-hidden">
+          <motion.div key="detail" initial={{ x: 80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 80, opacity: 0 }} transition={{ type: "spring", stiffness: 400, damping: 28 }} className="flex-1 flex flex-col overflow-hidden">
             <DetailView />
           </motion.div>
         ) : (
-          <motion.div key="menu" initial={{ x: -60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -60, opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col overflow-hidden">
+          <motion.div key="menu" initial={{ x: -80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -80, opacity: 0 }} transition={{ type: "spring", stiffness: 400, damping: 28 }} className="flex-1 flex flex-col overflow-hidden">
             <MenuView />
           </motion.div>
         )}
