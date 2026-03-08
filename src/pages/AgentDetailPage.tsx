@@ -152,7 +152,12 @@ const AgentDetailPage = () => {
                     <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-accent text-muted-foreground">
                       {stepTypeLabels[step.type]}
                     </span>
-                    {step.tool && <span className="text-xs text-muted-foreground">via {step.tool}</span>}
+                    {step.tool && (
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <img src={getIntegrationLogo(step.tool)} alt={step.tool} className="w-3 h-3" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        via {step.tool}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-foreground">{step.label}</p>
                 </div>
