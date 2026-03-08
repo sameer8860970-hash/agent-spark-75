@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { Integration } from "./ChatInput";
+import type { Integration } from "@/context/PlatformContext";
 
 interface IntegrationPickerProps {
   integrations: Integration[];
@@ -55,16 +55,22 @@ const IntegrationPicker = ({ integrations, searchQuery, onSelect, onClose }: Int
                   {integration.icon}
                 </motion.span>
                 <div className="flex-1">
-                  <span className="text-sm font-medium text-foreground">
-                    {integration.name}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground">
+                      {integration.name}
+                    </span>
+                    {integration.connected && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-status-done" />
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">{integration.category}</span>
                 </div>
                 <motion.span
                   initial={{ opacity: 0, scale: 0 }}
                   whileHover={{ opacity: 1, scale: 1 }}
                   className="text-xs px-2 py-0.5 rounded-md bg-accent text-muted-foreground"
                 >
-                  Connect
+                  {integration.connected ? "Add" : "Connect"}
                 </motion.span>
               </motion.button>
             ))}
