@@ -88,3 +88,17 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(0 0% 65%);
 }
+
+/* Mobile bottom nav safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Mobile page padding to account for bottom nav */
+@media (max-width: 767px) {
+  .flex-1.overflow-hidden.flex.flex-col.min-w-0 {
+    padding-bottom: 60px;
+  }
+}

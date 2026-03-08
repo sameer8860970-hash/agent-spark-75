@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { PlatformProvider } from "./context/PlatformContext";
 import AppSidebar from "./components/AppSidebar";
 import PageTransition from "./components/PageTransition";
+import ErrorBoundary from "./components/ErrorBoundary";
 import ChatPage from "./pages/ChatPage";
 import JobsPage from "./pages/JobsPage";
 import AgentDetailPage from "./pages/AgentDetailPage";
@@ -33,22 +34,24 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <PlatformProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <div className="flex h-screen overflow-hidden bg-background">
-            <AppSidebar />
-            <main className="flex-1 overflow-hidden flex flex-col">
-              <AnimatedRoutes />
-            </main>
-          </div>
-        </BrowserRouter>
-      </PlatformProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <PlatformProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <div className="flex h-screen overflow-hidden bg-background">
+              <AppSidebar />
+              <main className="flex-1 overflow-hidden flex flex-col min-w-0">
+                <AnimatedRoutes />
+              </main>
+            </div>
+          </BrowserRouter>
+        </PlatformProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
