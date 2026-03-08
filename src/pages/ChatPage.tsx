@@ -306,7 +306,7 @@ const ChatPage = () => {
           </button>
         </div>
       )}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto min-h-0">
         {!hasMessages ? (
           <div className="flex flex-col items-center justify-center h-full px-4">
             <motion.div
