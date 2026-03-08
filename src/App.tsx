@@ -9,9 +9,7 @@ import ChatPage from "./pages/ChatPage";
 import JobsPage from "./pages/JobsPage";
 import AgentsPage from "./pages/AgentsPage";
 import AgentDetailPage from "./pages/AgentDetailPage";
-import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
-import FavoritesPage from "./pages/FavoritesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,11 +26,9 @@ const App = () => (
             <main className="flex-1 overflow-hidden flex flex-col">
               <Routes>
                 <Route path="/" element={<ChatPage />} />
-                <Route path="/jobs" element={<JobsPage />} />
                 <Route path="/agents" element={<AgentsPage />} />
                 <Route path="/agents/:id" element={<AgentDetailPage />} />
-                <Route path="/integrations" element={<IntegrationsPage />} />
-                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/jobs" element={<JobsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
