@@ -85,41 +85,64 @@ const SettingsPage = () => {
   const activeItem = settingsMenu.find(m => m.key === activeSection);
 
   // Main menu list view (Telegram style)
+  // Group menu items into sections for iOS-style grouped look
+  const menuGroups = [
+    { items: settingsMenu.slice(0, 4) },   // Account, Brain, Knowledge, Connectors
+    { items: settingsMenu.slice(4, 8) },   // Tasks, Keys, Security, Notifications
+    { items: settingsMenu.slice(8, 11) },  // Observability, Billing, Devices
+    { items: settingsMenu.slice(11) },     // Appearance, Data, Language
+  ];
+
   const MenuView = () => (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 overflow-auto bg-muted/40">
       {/* Profile Header */}
-      <div className="relative bg-gradient-to-b from-muted/80 to-background pt-8 pb-5">
+      <div className="relative pt-8 pb-6">
         <div className="flex flex-col items-center">
-          <div className="w-[88px] h-[88px] rounded-full bg-foreground/10 border-[3px] border-background shadow-md flex items-center justify-center mb-3 relative">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="w-[88px] h-[88px] rounded-full bg-foreground/10 border-[3px] border-background shadow-md flex items-center justify-center mb-3 relative"
+          >
             <span className="text-foreground text-3xl font-semibold">T</span>
             <div className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center border-[2.5px] border-background shadow-sm">
               <Palette size={13} className="text-primary-foreground" />
             </div>
-          </div>
+          </motion.div>
           <h2 className="text-lg font-semibold text-foreground leading-tight">Togzhan</h2>
           <p className="text-[13px] text-muted-foreground mt-0.5">+1 234 567 8900</p>
         </div>
       </div>
 
-      {/* Settings Menu Items */}
-      <div className="mt-1">
-        {settingsMenu.map((item, i) => (
-          <motion.button
-            key={item.key}
-            initial={{ opacity: 0, y: 6 }}
+      {/* Grouped Settings Menu */}
+      <div className="px-4 space-y-5 pb-4">
+        {menuGroups.map((group, gi) => (
+          <motion.div
+            key={gi}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 30, delay: i * 0.02 }}
-            onClick={() => setActiveSection(item.key)}
-            whileTap={{ scale: 0.97 }}
-            className="w-full flex items-center gap-3.5 pl-4 pr-3 py-[11px] hover:bg-accent/60 transition-colors active:bg-accent border-b border-border/40 last:border-b-0"
+            transition={{ type: "spring", stiffness: 500, damping: 30, delay: gi * 0.06 }}
+            className="bg-background rounded-2xl border border-border/50 overflow-hidden shadow-sm"
           >
-            <item.icon size={20} className={`${item.iconColor} flex-shrink-0`} strokeWidth={1.6} />
-            <div className="flex-1 text-left min-w-0">
-              <p className="text-[14px] font-normal text-foreground leading-tight">{item.label}</p>
-              <p className="text-[11.5px] text-muted-foreground truncate leading-tight mt-0.5">{item.description}</p>
-            </div>
-            <ChevronRight size={16} className="text-muted-foreground/50 flex-shrink-0" />
-          </motion.button>
+            {group.items.map((item, i) => (
+              <motion.button
+                key={item.key}
+                onClick={() => setActiveSection(item.key)}
+                whileTap={{ scale: 0.98, backgroundColor: "hsl(var(--accent))" }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className={`w-full flex items-center gap-3.5 pl-4 pr-3 py-3 hover:bg-accent/50 transition-colors active:bg-accent ${
+                  i < group.items.length - 1 ? "border-b border-border/30" : ""
+                }`}
+              >
+                <item.icon size={20} className={`${item.iconColor} flex-shrink-0`} strokeWidth={1.6} />
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-[14px] font-normal text-foreground leading-tight">{item.label}</p>
+                  <p className="text-[11.5px] text-muted-foreground truncate leading-tight mt-0.5">{item.description}</p>
+                </div>
+                <ChevronRight size={16} className="text-muted-foreground/40 flex-shrink-0" />
+              </motion.button>
+            ))}
+          </motion.div>
         ))}
       </div>
 
