@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { MessageSquare, Bot, Layers, Settings } from "lucide-react";
+import { MessageSquare, Bot, Layers, Settings, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
@@ -12,10 +13,11 @@ const navItems = [
 
 const AppSidebar = () => {
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  return (
-    <div className="flex flex-col items-center w-[52px] border-r border-border bg-background py-3 gap-0.5">
-      <Link to="/">
+  const NavContent = () => (
+    <>
+      <Link to="/" onClick={() => setMobileOpen(false)}>
         <motion.div
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
@@ -30,7 +32,7 @@ const AppSidebar = () => {
         return (
           <Tooltip key={item.path}>
             <TooltipTrigger asChild>
-              <Link to={item.path}>
+              <Link to={item.path} onClick={() => setMobileOpen(false)}>
                 <motion.div
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.95 }}
@@ -54,7 +56,7 @@ const AppSidebar = () => {
       <div className="mt-auto flex flex-col items-center gap-0.5">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link to="/settings">
+            <Link to="/settings" onClick={() => setMobileOpen(false)}>
               <motion.div
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
@@ -76,7 +78,51 @@ const AppSidebar = () => {
           <span className="text-foreground text-[10px] font-semibold">T</span>
         </motion.div>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex flex-col items-center w-[52px] border-r border-border bg-background py-3 gap-0.5">
+        <NavContent />
+      </div>
+
+      {/* Mobile bottom nav */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background flex items-center justify-around px-2 py-1.5 safe-area-bottom">
+        {navItems.map((item) => {
+          const isActive = item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
+          return (
+            <Link key={item.path} to={item.path} className="flex-1 flex flex-col items-center gap-0.5 py-1">
+              <item.icon
+                size={20}
+                strokeWidth={1.5}
+                className={cn(
+                  "transition-colors",
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                )}
+              />
+              <span className={cn("text-[10px]", isActive ? "text-foreground font-medium" : "text-muted-foreground")}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+        <Link to="/settings" className="flex-1 flex flex-col items-center gap-0.5 py-1">
+          <Settings
+            size={20}
+            strokeWidth={1.5}
+            className={cn(
+              "transition-colors",
+              location.pathname === "/settings" ? "text-foreground" : "text-muted-foreground"
+            )}
+          />
+          <span className={cn("text-[10px]", location.pathname === "/settings" ? "text-foreground font-medium" : "text-muted-foreground")}>
+            Settings
+          </span>
+        </Link>
+      </div>
+    </>
   );
 };
 
