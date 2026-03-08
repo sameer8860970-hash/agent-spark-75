@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMarkdown from "@/components/ChatMarkdown";
-import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight, ChevronDown, ChevronUp, Search, FileText, Database, Globe, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight, ChevronDown, ChevronUp, Search, FileText, Database, Globe, Sparkles, CheckCircle2, Loader2, RotateCcw, MessageSquarePlus } from "lucide-react";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
