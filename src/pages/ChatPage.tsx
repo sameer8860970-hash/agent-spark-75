@@ -105,16 +105,6 @@ const ChatPage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {agents.slice(0, 6).map((agent, i) => {
                   const TriggerIcon = agent.trigger === "schedule" ? Clock : agent.trigger === "event" ? Webhook : Zap;
-                  const logos: Record<string, string> = {
-                    whatsapp: "https://cdn.simpleicons.org/whatsapp",
-                    slack: "https://cdn.simpleicons.org/slack",
-                    gmail: "https://cdn.simpleicons.org/gmail",
-                    jira: "https://cdn.simpleicons.org/jira",
-                    hubspot: "https://cdn.simpleicons.org/hubspot",
-                    amplitude: "https://cdn.simpleicons.org/amplitude",
-                    postgres: "https://cdn.simpleicons.org/postgresql",
-                    s3: "https://cdn.simpleicons.org/amazons3",
-                  };
                   return (
                     <motion.div
                       key={agent.id}
