@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight } from "lucide-react";
+import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight, ChevronDown, ChevronUp, Search, FileText, Database, Globe, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
 import type { Integration } from "@/context/PlatformContext";
+
+interface ThinkingStep {
+  id: string;
+  label: string;
+  icon: "search" | "file" | "database" | "globe" | "sparkles";
+  status: "running" | "done";
+  detail?: string;
+}
 
 interface Message {
   id: string;
@@ -15,6 +23,8 @@ interface Message {
   content: string;
   integrations?: Integration[];
   timestamp: Date;
+  thinkingSteps?: ThinkingStep[];
+  exploredSummary?: string;
 }
 
 const statusStyles: Record<string, string> = {
@@ -24,12 +34,143 @@ const statusStyles: Record<string, string> = {
   error: "bg-status-failed-bg text-status-failed",
 };
 
+const stepIcons = {
+  search: Search,
+  file: FileText,
+  database: Database,
+  globe: Globe,
+  sparkles: Sparkles,
+};
+
+// Simulate structured thinking steps based on integrations and message content
+const generateThinkingSteps = (content: string, attachedIntegrations: Integration[]): ThinkingStep[] => {
+  const steps: ThinkingStep[] = [];
+  const lower = content.toLowerCase();
+
+  // Always start with exploration
+  steps.push({ id: "explore", label: "Exploring context", icon: "file", status: "running", detail: `Analyzed ${Math.floor(Math.random() * 8) + 3} files` });
+
+  // Add integration-specific steps
+  attachedIntegrations.forEach((int) => {
+    if (int.id === "amplitude" || int.category === "Analytics") {
+      steps.push({ id: `search-${int.id}`, label: `Search in ${int.name}`, icon: "search", status: "running", detail: "Querying analytics data" });
+    } else if (int.category === "Database") {
+      steps.push({ id: `query-${int.id}`, label: `Query ${int.name}`, icon: "database", status: "running", detail: "Running SQL query" });
+    } else if (int.category === "Messaging" || int.category === "Email") {
+      steps.push({ id: `fetch-${int.id}`, label: `Fetch from ${int.name}`, icon: "globe", status: "running", detail: "Retrieving messages" });
+    } else if (int.category === "CRM") {
+      steps.push({ id: `crm-${int.id}`, label: `Search ${int.name}`, icon: "search", status: "running", detail: "Looking up records" });
+    } else {
+      steps.push({ id: `connect-${int.id}`, label: `Connect to ${int.name}`, icon: "globe", status: "running", detail: "Establishing connection" });
+    }
+  });
+
+  // Add content-specific steps
+  if (lower.includes("funnel") || lower.includes("analytics") || lower.includes("data")) {
+    steps.push({ id: "analyze", label: "Analyzing data patterns", icon: "sparkles", status: "running", detail: "Running analysis" });
+  }
+  if (lower.includes("search") || lower.includes("find") || lower.includes("look")) {
+    steps.push({ id: "web-search", label: "Web search", icon: "search", status: "running", detail: "2 searches" });
+  }
+
+  // Always end with synthesis
+  steps.push({ id: "synthesize", label: "Synthesizing response", icon: "sparkles", status: "running", detail: "Generating answer" });
+
+  return steps;
+};
+
+const ThinkingPopup = ({ steps, exploredSummary, isActive }: { steps: ThinkingStep[]; exploredSummary: string; isActive: boolean }) => {
+  const [expanded, setExpanded] = useState(isActive);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="border border-border rounded-xl overflow-hidden bg-background mb-2"
+    >
+      {/* Summary header */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between px-3.5 py-2.5 hover:bg-accent/40 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          {isActive ? (
+            <Loader2 size={13} className="text-muted-foreground animate-spin" />
+          ) : (
+            <CheckCircle2 size={13} className="text-status-done" />
+          )}
+          <span className="text-xs text-muted-foreground">{exploredSummary}</span>
+        </div>
+        {expanded ? <ChevronUp size={13} className="text-muted-foreground" /> : <ChevronDown size={13} className="text-muted-foreground" />}
+      </button>
+
+      {/* Expanded steps */}
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-border px-3.5 py-2 space-y-1">
+              {steps.map((s, i) => {
+                const Icon = stepIcons[s.icon];
+                return (
+                  <motion.div
+                    key={s.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    className="flex items-center gap-2 py-1"
+                  >
+                    <div className="w-5 h-5 rounded-md bg-accent flex items-center justify-center flex-shrink-0">
+                      {s.status === "running" && isActive ? (
+                        <Loader2 size={11} className="text-muted-foreground animate-spin" />
+                      ) : (
+                        <Icon size={11} className="text-muted-foreground" />
+                      )}
+                    </div>
+                    <span className="text-xs text-foreground flex-1">{s.label}</span>
+                    {s.status === "done" && (
+                      <CheckCircle2 size={11} className="text-status-done flex-shrink-0" />
+                    )}
+                    {s.detail && (
+                      <span className="text-[10px] text-muted-foreground flex-shrink-0">{s.detail}</span>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* "Run Everything" style collapsible label */}
+            <div className="border-t border-border px-3.5 py-2">
+              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                <ChevronDown size={10} />
+                Run Everything
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
 const ChatPage = () => {
   const { integrations, toggleIntegration, agents } = usePlatform();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [activeThinkingSteps, setActiveThinkingSteps] = useState<ThinkingStep[]>([]);
+  const [activeExploreSummary, setActiveExploreSummary] = useState("");
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading, activeThinkingSteps]);
 
   const handleSend = (content: string, attachedIntegrations: Integration[]) => {
     attachedIntegrations.forEach((int) => {
@@ -49,24 +190,56 @@ const ChatPage = () => {
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
+    // Generate thinking steps
+    const thinkingSteps = generateThinkingSteps(content, attachedIntegrations);
+    setActiveThinkingSteps([]);
+    setActiveExploreSummary("");
+
+    // Animate steps appearing one by one
+    const fileCount = Math.floor(Math.random() * 8) + 3;
+    const searchCount = thinkingSteps.filter((s) => s.icon === "search").length;
+
+    thinkingSteps.forEach((s, i) => {
+      setTimeout(() => {
+        setActiveThinkingSteps((prev) => [...prev, s]);
+        setActiveExploreSummary(
+          `Explored ${fileCount} files${searchCount > 0 ? `, ${searchCount} searches` : ""}`
+        );
+      }, 300 + i * 500);
+    });
+
+    // Mark steps as done and produce final response
+    const totalThinkingTime = 300 + thinkingSteps.length * 500 + 400;
+
+    setTimeout(() => {
+      // Mark all steps as done
+      setActiveThinkingSteps((prev) => prev.map((s) => ({ ...s, status: "done" as const })));
+    }, totalThinkingTime - 200);
+
     setTimeout(() => {
       const intNames = attachedIntegrations.map((i) => i.name).join(", ");
       const responseContent = attachedIntegrations.length > 0
-        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I'm analyzing the data now and will have results shortly.` : "What would you like me to do with this integration?"}`
-        : `${content}\n\nI'm processing this now. Type **@** to connect integrations like Slack, WhatsApp, Gmail for enhanced capabilities.`;
+        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I've analyzed the data and here are the results.` : "What would you like me to do with this integration?"}`
+        : `${content}\n\nI've processed your request. Type **@** to connect integrations like Slack, WhatsApp, Gmail for enhanced capabilities.`;
+
+      const finalExploreSummary = `Explored ${fileCount} files${searchCount > 0 ? `, ${searchCount} searches` : ""}`;
+      const finalSteps = thinkingSteps.map((s) => ({ ...s, status: "done" as const }));
 
       setMessages((prev) => [...prev, {
         id: crypto.randomUUID(),
         role: "assistant",
         content: responseContent,
         timestamp: new Date(),
+        thinkingSteps: finalSteps,
+        exploredSummary: finalExploreSummary,
       }]);
       setIsLoading(false);
-    }, 1200);
+      setActiveThinkingSteps([]);
+      setActiveExploreSummary("");
+    }, totalThinkingTime);
   };
 
   const hasMessages = messages.length > 0;
-  const activeAgents = agents.filter((a) => a.status === "active");
 
   return (
     <div className="flex flex-col h-full">
@@ -84,7 +257,6 @@ const ChatPage = () => {
 
             <ChatInput onSend={handleSend} isLoading={isLoading} integrations={integrations} />
 
-            {/* Agents section below chat input */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -178,8 +350,18 @@ const ChatPage = () => {
                       <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center flex-shrink-0 mt-0.5">
                         <span className="text-primary-foreground text-[10px] font-bold">A</span>
                       </div>
-                      <div className="flex-1 prose prose-sm max-w-none text-foreground [&_p]:text-[13px] [&_p]:leading-relaxed [&_strong]:font-semibold">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      <div className="flex-1">
+                        {/* Thinking steps popup */}
+                        {msg.thinkingSteps && msg.thinkingSteps.length > 0 && (
+                          <ThinkingPopup
+                            steps={msg.thinkingSteps}
+                            exploredSummary={msg.exploredSummary || ""}
+                            isActive={false}
+                          />
+                        )}
+                        <div className="prose prose-sm max-w-none text-foreground [&_p]:text-[13px] [&_p]:leading-relaxed [&_strong]:font-semibold">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -187,18 +369,30 @@ const ChatPage = () => {
               ))}
             </AnimatePresence>
 
+            {/* Active thinking state */}
             {isLoading && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2.5">
-                <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-primary-foreground text-[10px] font-bold">A</span>
                 </div>
-                <div className="flex items-center gap-1 pt-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <motion.div key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }} className="w-1 h-1 rounded-full bg-muted-foreground" />
-                  ))}
+                <div className="flex-1">
+                  {activeThinkingSteps.length > 0 ? (
+                    <ThinkingPopup
+                      steps={activeThinkingSteps}
+                      exploredSummary={activeExploreSummary || "Processing..."}
+                      isActive={true}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-1 pt-1.5">
+                      {[0, 1, 2].map((i) => (
+                        <motion.div key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }} className="w-1 h-1 rounded-full bg-muted-foreground" />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
+            <div ref={messagesEndRef} />
           </div>
         )}
       </div>
