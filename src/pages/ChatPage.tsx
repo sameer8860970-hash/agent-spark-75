@@ -219,9 +219,11 @@ const ChatPage = () => {
 
     setTimeout(() => {
       const intNames = attachedIntegrations.map((i) => i.name).join(", ");
+      const hasContext = knowledgeContext.trim().length > 0;
+      const contextNote = hasContext ? `\n\n> 📄 *Used your knowledge context for personalization.*` : "";
       const responseContent = attachedIntegrations.length > 0
-        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I've analyzed the data and here are the results.` : "What would you like me to do with this integration?"}`
-        : `${content}\n\nI've processed your request. Type **@** to connect integrations like Slack, WhatsApp, Gmail for enhanced capabilities.`;
+        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I've analyzed the data and here are the results.` : "What would you like me to do with this integration?"}${contextNote}`
+        : `${content}\n\nI've processed your request. Type **@** to connect integrations like Slack, WhatsApp, Gmail for enhanced capabilities.${contextNote}`;
 
       const finalExploreSummary = `Explored ${fileCount} files${searchCount > 0 ? `, ${searchCount} searches` : ""}`;
       const finalSteps = thinkingSteps.map((s) => ({ ...s, status: "done" as const }));
