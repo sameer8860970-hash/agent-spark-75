@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMarkdown from "@/components/ChatMarkdown";
-import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight, ChevronDown, ChevronUp, Search, FileText, Database, Globe, Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight, ChevronDown, ChevronUp, Search, FileText, Database, Globe, Sparkles, CheckCircle2, Loader2, RotateCcw, MessageSquarePlus } from "lucide-react";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
@@ -274,8 +274,32 @@ const ChatPage = () => {
 
   const hasMessages = messages.length > 0;
 
+  const handleNewChat = () => {
+    setMessages([]);
+    setIsLoading(false);
+    setActiveThinkingSteps([]);
+    setActiveExploreSummary("");
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Top bar with new chat */}
+      {hasMessages && (
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border flex-shrink-0">
+          <span className="text-xs text-muted-foreground">{messages.length} messages</span>
+          <button
+            onClick={handleNewChat}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+          >
+            <MessageSquarePlus size={13} />
+            New Chat
+          </button>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto min-h-0">
         {!hasMessages ? (
           <div className="flex flex-col items-center justify-center h-full px-4">
@@ -377,6 +401,7 @@ const ChatPage = () => {
                       <div className="bg-accent rounded-2xl rounded-br-sm px-3.5 py-2">
                         <p className="text-sm text-foreground">{msg.content}</p>
                       </div>
+                      <p className="text-[10px] text-muted-foreground mt-1 text-right">{formatTime(msg.timestamp)}</p>
                     </div>
                   ) : (
                     <div className="flex gap-2.5">
