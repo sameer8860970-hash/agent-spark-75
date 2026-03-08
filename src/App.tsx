@@ -11,6 +11,7 @@ import ChatPage from "./pages/ChatPage";
 import JobsPage from "./pages/JobsPage";
 import AgentDetailPage from "./pages/AgentDetailPage";
 import SettingsPage from "./pages/SettingsPage";
+import AgentsPage from "./pages/AgentsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><ChatPage /></PageTransition>} />
+        <Route path="/agents" element={<PageTransition><AgentsPage /></PageTransition>} />
         <Route path="/agents/:id" element={<PageTransition><AgentDetailPage /></PageTransition>} />
         <Route path="/jobs" element={<PageTransition><JobsPage /></PageTransition>} />
         <Route path="/settings" element={<PageTransition><SettingsPage /></PageTransition>} />
