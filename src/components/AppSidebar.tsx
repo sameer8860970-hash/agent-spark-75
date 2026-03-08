@@ -6,8 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
-  { icon: MessageSquare, path: "/", label: "Chat" },
+  { icon: MessageSquare, path: "/", label: "Chats" },
   { icon: Bot, path: "/agents", label: "Agents" },
+  { icon: Settings, path: "/settings", label: "Settings" },
   { icon: Layers, path: "/jobs", label: "Jobs" },
 ];
 
