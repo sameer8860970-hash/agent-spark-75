@@ -360,9 +360,7 @@ const ChatPage = () => {
                             isActive={false}
                           />
                         )}
-                        <div className="prose prose-sm max-w-none text-foreground [&_p]:text-[13px] [&_p]:leading-relaxed [&_strong]:font-semibold">
-                          <ReactMarkdown>{msg.content}</ReactMarkdown>
-                        </div>
+                        <ChatMarkdown content={msg.content} />
                       </div>
                     </div>
                   )}
