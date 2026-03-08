@@ -4,6 +4,7 @@ export interface Integration {
   id: string;
   name: string;
   icon: string;
+  logo: string;
   color: string;
   connected: boolean;
   category: string;
