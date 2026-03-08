@@ -392,7 +392,7 @@ const ChatPage = () => {
                             isActive={false}
                           />
                         )}
-                        <ChatMarkdown content={msg.content} />
+                        <ChatMarkdown content={msg.content} isStreaming={isLoading && msg.id === messages[messages.length - 1]?.id} />
                       </div>
                     </div>
                   )}
