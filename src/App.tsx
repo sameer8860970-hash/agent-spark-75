@@ -7,7 +7,6 @@ import { PlatformProvider } from "./context/PlatformContext";
 import AppSidebar from "./components/AppSidebar";
 import ChatPage from "./pages/ChatPage";
 import JobsPage from "./pages/JobsPage";
-import AgentsPage from "./pages/AgentsPage";
 import AgentDetailPage from "./pages/AgentDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
@@ -26,7 +25,6 @@ const App = () => (
             <main className="flex-1 overflow-hidden flex flex-col">
               <Routes>
                 <Route path="/" element={<ChatPage />} />
-                <Route path="/agents" element={<AgentsPage />} />
                 <Route path="/agents/:id" element={<AgentDetailPage />} />
                 <Route path="/jobs" element={<JobsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
