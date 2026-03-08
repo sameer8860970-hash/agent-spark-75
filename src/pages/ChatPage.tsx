@@ -454,7 +454,7 @@ const ChatPage = () => {
                 </div>
               </motion.div>
             )}
-            <div ref={messagesEndRef} />
+            
           </div>
         )}
       </div>
