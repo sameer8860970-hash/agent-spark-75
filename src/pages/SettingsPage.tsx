@@ -10,18 +10,18 @@ import { usePlatform } from "@/context/PlatformContext";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 const tabs = [
-  { key: "profile", icon: User, label: "Profile" },
-  { key: "brain", icon: Brain, label: "Agent Brain" },
-  { key: "knowledge", icon: FileText, label: "Knowledge & Files" },
-  { key: "connectors", icon: Link2, label: "Connectors" },
-  { key: "tasks", icon: Clock, label: "Tasks & Automations" },
-  { key: "api", icon: Key, label: "Secrets & Keys" },
-  { key: "security", icon: Shield, label: "Security" },
-  { key: "observability", icon: Activity, label: "Observability" },
-  { key: "notifications", icon: Bell, label: "Notifications" },
-  { key: "billing", icon: CreditCard, label: "Billing" },
-  { key: "appearance", icon: Palette, label: "Appearance" },
-  { key: "data", icon: Download, label: "Data & Export" },
+  { key: "profile", icon: User, label: "Profile", color: "text-status-process" },
+  { key: "brain", icon: Brain, label: "Agent Brain", color: "text-[hsl(280,70%,55%)]" },
+  { key: "knowledge", icon: FileText, label: "Knowledge & Files", color: "text-status-pending" },
+  { key: "connectors", icon: Link2, label: "Connectors", color: "text-status-done" },
+  { key: "tasks", icon: Clock, label: "Tasks & Automations", color: "text-[hsl(200,80%,50%)]" },
+  { key: "api", icon: Key, label: "Secrets & Keys", color: "text-[hsl(340,70%,55%)]" },
+  { key: "security", icon: Shield, label: "Security", color: "text-status-failed" },
+  { key: "observability", icon: Activity, label: "Observability", color: "text-[hsl(160,60%,45%)]" },
+  { key: "notifications", icon: Bell, label: "Notifications", color: "text-[hsl(45,90%,50%)]" },
+  { key: "billing", icon: CreditCard, label: "Billing", color: "text-[hsl(260,60%,55%)]" },
+  { key: "appearance", icon: Palette, label: "Appearance", color: "text-[hsl(320,60%,55%)]" },
+  { key: "data", icon: Download, label: "Data & Export", color: "text-[hsl(190,70%,45%)]" },
 ];
 
 const SettingsPage = () => {
