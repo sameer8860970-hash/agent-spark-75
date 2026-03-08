@@ -133,7 +133,7 @@ const SettingsPage = () => {
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <t.icon size={15} />
+                <t.icon size={15} className={t.color} />
                 {t.label}
               </span>
             </motion.button>
