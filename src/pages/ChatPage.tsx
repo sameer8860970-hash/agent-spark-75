@@ -89,9 +89,10 @@ const ChatPage = () => {
                           {msg.integrations.map((int) => (
                             <span
                               key={int.id}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent text-xs font-medium text-foreground"
+                              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-accent text-xs font-medium text-foreground"
                             >
-                              {int.icon} {int.name}
+                              <img src={int.logo} alt={int.name} className="w-3 h-3" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                              {int.name}
                             </span>
                           ))}
                         </div>
