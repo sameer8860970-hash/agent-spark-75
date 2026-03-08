@@ -172,8 +172,14 @@ const ChatPage = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const lastMsgContent = messages[messages.length - 1]?.content;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    requestAnimationFrame(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
+    });
   }, [messages.length, isLoading, activeThinkingSteps, lastMsgContent]);
 
   const handleSend = async (content: string, attachedIntegrations: Integration[]) => {
@@ -300,7 +306,7 @@ const ChatPage = () => {
           </button>
         </div>
       )}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto min-h-0">
         {!hasMessages ? (
           <div className="flex flex-col items-center justify-center h-full px-4">
             <motion.div
