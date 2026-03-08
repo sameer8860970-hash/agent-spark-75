@@ -3,25 +3,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Key, Bell, Shield, Palette, Link2, CreditCard, Download,
   Eye, EyeOff, Plus, Trash2, Copy, Check, Brain, FileText, Clock,
-  Activity, Search, Database, Filter, ChevronRight, ArrowLeft, Upload
+  Activity, Search, Database, Filter, ChevronRight, ArrowLeft, Upload,
+  Smartphone, BatteryMedium, Globe
 } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
 import ChatMarkdown from "@/components/ChatMarkdown";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 const settingsMenu = [
-  { key: "profile", icon: User, label: "Account", description: "Name, Email, Bio", color: "bg-status-process" },
+  { key: "profile", icon: User, label: "Account", description: "Name, Email, Bio", color: "bg-[hsl(210,80%,55%)]" },
   { key: "brain", icon: Brain, label: "Agent Brain", description: "Persona, Memory, Guardrails", color: "bg-[hsl(280,70%,55%)]" },
-  { key: "knowledge", icon: FileText, label: "Knowledge & Files", description: "Documents, Context", color: "bg-status-pending" },
-  { key: "connectors", icon: Link2, label: "Connectors", description: "Integrations, APIs", color: "bg-status-done" },
+  { key: "knowledge", icon: FileText, label: "Knowledge & Files", description: "Documents, Context", color: "bg-[hsl(35,90%,55%)]" },
+  { key: "connectors", icon: Link2, label: "Connectors", description: "Integrations, APIs", color: "bg-[hsl(145,65%,45%)]" },
   { key: "tasks", icon: Clock, label: "Tasks & Automations", description: "Schedules, Triggers", color: "bg-[hsl(200,80%,50%)]" },
   { key: "api", icon: Key, label: "Secrets & Keys", description: "API Keys, Tokens", color: "bg-[hsl(340,70%,55%)]" },
-  { key: "security", icon: Shield, label: "Security", description: "2FA, Sessions, Audit", color: "bg-status-failed" },
+  { key: "security", icon: Shield, label: "Privacy & Security", description: "2FA, Sessions, Audit", color: "bg-[hsl(145,65%,45%)]" },
+  { key: "notifications", icon: Bell, label: "Notifications", description: "Sounds, Alerts, Badges", color: "bg-[hsl(0,75%,55%)]" },
   { key: "observability", icon: Activity, label: "Observability", description: "Logs, Metrics", color: "bg-[hsl(160,60%,45%)]" },
-  { key: "notifications", icon: Bell, label: "Notifications", description: "Alerts, Channels", color: "bg-[hsl(45,90%,50%)]" },
   { key: "billing", icon: CreditCard, label: "Billing", description: "Plan, Usage", color: "bg-[hsl(260,60%,55%)]" },
-  { key: "appearance", icon: Palette, label: "Appearance", description: "Theme, Layout", color: "bg-[hsl(320,60%,55%)]" },
+  { key: "devices", icon: Smartphone, label: "Devices", description: "Manage connected devices", color: "bg-[hsl(210,70%,50%)]" },
+  { key: "appearance", icon: Palette, label: "Appearance", description: "Theme, Layout", color: "bg-[hsl(25,85%,55%)]" },
   { key: "data", icon: Download, label: "Data & Export", description: "Backup, Export", color: "bg-[hsl(190,70%,45%)]" },
+  { key: "language", icon: Globe, label: "Language", description: "English", color: "bg-[hsl(280,55%,60%)]" },
 ];
 
 const SettingsPage = () => {
@@ -81,55 +84,59 @@ const SettingsPage = () => {
 
   const activeItem = settingsMenu.find(m => m.key === activeSection);
 
-  // Main menu list view
+  // Main menu list view (Telegram style)
   const MenuView = () => (
     <div className="flex-1 overflow-auto">
       {/* Profile Header */}
-      <div className="flex flex-col items-center pt-8 pb-6 border-b border-border">
-        <div className="w-20 h-20 rounded-full bg-foreground/10 border-2 border-border flex items-center justify-center mb-3 relative">
-          <span className="text-foreground text-2xl font-semibold">TA</span>
-          <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-background">
-            <Palette size={12} className="text-primary-foreground" />
+      <div className="relative bg-gradient-to-b from-muted/80 to-background pt-8 pb-5">
+        <div className="flex flex-col items-center">
+          <div className="w-[88px] h-[88px] rounded-full bg-foreground/10 border-[3px] border-background shadow-md flex items-center justify-center mb-3 relative">
+            <span className="text-foreground text-3xl font-semibold">T</span>
+            <div className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center border-[2.5px] border-background shadow-sm">
+              <Palette size={13} className="text-primary-foreground" />
+            </div>
           </div>
+          <h2 className="text-lg font-semibold text-foreground leading-tight">Togzhan</h2>
+          <p className="text-[13px] text-muted-foreground mt-0.5">+1 234 567 8900</p>
         </div>
-        <h2 className="text-base font-semibold text-foreground">Togzhan Agarys</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">togzhan@example.com</p>
       </div>
 
       {/* Settings Menu Items */}
-      <div className="py-2">
+      <div className="mt-1">
         {settingsMenu.map((item, i) => (
           <motion.button
             key={item.key}
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.02 }}
+            transition={{ delay: i * 0.015 }}
             onClick={() => setActiveSection(item.key)}
-            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-accent/60 transition-colors active:bg-accent"
+            className="w-full flex items-center gap-3.5 pl-4 pr-3 py-[11px] hover:bg-accent/60 transition-colors active:bg-accent border-b border-border/40 last:border-b-0"
           >
-            <div className={`w-8 h-8 rounded-lg ${item.color} flex items-center justify-center flex-shrink-0`}>
-              <item.icon size={16} className="text-primary-foreground" />
+            <div className={`w-[34px] h-[34px] rounded-full ${item.color} flex items-center justify-center flex-shrink-0`}>
+              <item.icon size={17} className="text-primary-foreground" strokeWidth={1.8} />
             </div>
             <div className="flex-1 text-left min-w-0">
-              <p className="text-sm font-medium text-foreground">{item.label}</p>
-              <p className="text-[11px] text-muted-foreground truncate">{item.description}</p>
+              <p className="text-[14px] font-normal text-foreground leading-tight">{item.label}</p>
+              <p className="text-[11.5px] text-muted-foreground truncate leading-tight mt-0.5">{item.description}</p>
             </div>
-            <ChevronRight size={16} className="text-muted-foreground flex-shrink-0" />
           </motion.button>
         ))}
       </div>
+
+      {/* Bottom spacing for mobile nav */}
+      <div className="h-20 md:h-8" />
     </div>
   );
 
-  // Detail view with back button
+  // Detail view with back header
   const DetailView = () => (
     <div className="flex-1 overflow-auto">
-      {/* Header with back */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border flex items-center gap-3 px-4 py-3">
-        <button onClick={() => setActiveSection(null)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent transition-colors">
-          <ArrowLeft size={18} className="text-foreground" />
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border flex items-center gap-2 px-2 py-2.5">
+        <button onClick={() => setActiveSection(null)} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-accent transition-colors">
+          <ArrowLeft size={20} className="text-foreground" />
         </button>
-        <h2 className="text-base font-semibold text-foreground">{activeItem?.label}</h2>
+        <h2 className="text-[15px] font-semibold text-foreground">{activeItem?.label}</h2>
       </div>
 
       <div className="p-4 space-y-5">
@@ -170,9 +177,7 @@ const SettingsPage = () => {
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Timezone</label>
                 <select className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring">
-                  <option>UTC+6 (Almaty)</option>
-                  <option>UTC+0 (London)</option>
-                  <option>UTC-5 (New York)</option>
+                  <option>UTC+6 (Almaty)</option><option>UTC+0 (London)</option><option>UTC-5 (New York)</option>
                 </select>
               </div>
             </div>
@@ -335,22 +340,6 @@ const SettingsPage = () => {
           </div>
         )}
 
-        {activeSection === "observability" && (
-          <div className="space-y-4">
-            <div className="border border-border rounded-lg p-4 space-y-3">
-              <p className="text-sm font-medium text-foreground">Logging</p>
-              <div className="flex items-center justify-between">
-                <div><p className="text-xs text-foreground">Verbose Logging</p><p className="text-[10px] text-muted-foreground">Log all agent actions</p></div>
-                <Toggle checked={true} onChange={() => {}} />
-              </div>
-              <div className="flex items-center justify-between">
-                <div><p className="text-xs text-foreground">Performance Metrics</p><p className="text-[10px] text-muted-foreground">Track latency & throughput</p></div>
-                <Toggle checked={true} onChange={() => {}} />
-              </div>
-            </div>
-          </div>
-        )}
-
         {activeSection === "notifications" && (
           <div className="space-y-3">
             {[
@@ -369,6 +358,22 @@ const SettingsPage = () => {
           </div>
         )}
 
+        {activeSection === "observability" && (
+          <div className="space-y-4">
+            <div className="border border-border rounded-lg p-4 space-y-3">
+              <p className="text-sm font-medium text-foreground">Logging</p>
+              <div className="flex items-center justify-between">
+                <div><p className="text-xs text-foreground">Verbose Logging</p><p className="text-[10px] text-muted-foreground">Log all agent actions</p></div>
+                <Toggle checked={true} onChange={() => {}} />
+              </div>
+              <div className="flex items-center justify-between">
+                <div><p className="text-xs text-foreground">Performance Metrics</p><p className="text-[10px] text-muted-foreground">Track latency & throughput</p></div>
+                <Toggle checked={true} onChange={() => {}} />
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeSection === "billing" && (
           <div className="space-y-4">
             <div className="border border-border rounded-lg p-4">
@@ -383,6 +388,25 @@ const SettingsPage = () => {
                 <div className="w-full h-1.5 bg-accent rounded-full overflow-hidden"><div className="h-full bg-status-pending rounded-full" style={{ width: "21%" }} /></div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeSection === "devices" && (
+          <div className="space-y-3">
+            {[
+              { name: "Chrome on macOS", status: "Current session", active: true },
+              { name: "Safari on iPhone 15", status: "Last active 2h ago", active: false },
+              { name: "Firefox on Windows", status: "Last active 3 days ago", active: false },
+            ].map((d) => (
+              <div key={d.name} className="flex items-center gap-3 py-3 border-b border-border last:border-0">
+                <Smartphone size={18} className="text-muted-foreground" />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-foreground">{d.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{d.status}</p>
+                </div>
+                {!d.active && <button className="text-[10px] text-status-failed hover:underline">Remove</button>}
+              </div>
+            ))}
           </div>
         )}
 
@@ -410,7 +434,20 @@ const SettingsPage = () => {
             ))}
           </div>
         )}
+
+        {activeSection === "language" && (
+          <div className="space-y-1">
+            {["English", "Spanish", "French", "German", "Japanese", "Korean", "Chinese", "Russian", "Arabic", "Hindi"].map((lang) => (
+              <button key={lang} className={`w-full text-left px-4 py-3 text-sm rounded-lg transition-colors ${lang === "English" ? "bg-accent text-foreground font-medium" : "text-muted-foreground hover:bg-accent/60"}`}>
+                {lang}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Bottom spacing for mobile nav */}
+      <div className="h-20 md:h-8" />
     </div>
   );
 
