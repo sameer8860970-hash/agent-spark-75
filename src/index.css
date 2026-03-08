@@ -96,9 +96,3 @@
   }
 }
 
-/* Mobile page padding to account for bottom nav */
-@media (max-width: 767px) {
-  .flex-1.overflow-hidden.flex.flex-col.min-w-0 {
-    padding-bottom: 60px;
-  }
-}
