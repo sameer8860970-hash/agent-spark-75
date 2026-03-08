@@ -223,7 +223,10 @@ const AgentDetailPage = () => {
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Connected Integrations</label>
               <div className="flex flex-wrap gap-1.5">
                 {agent.integrations.map((intId) => (
-                  <span key={intId} className="px-2 py-1 text-xs bg-accent rounded-md text-foreground font-medium">{intId}</span>
+                  <span key={intId} className="inline-flex items-center gap-1.5 px-2 py-1 text-xs bg-accent rounded-md text-foreground font-medium">
+                    <img src={getIntegrationLogo(intId)} alt={intId} className="w-3.5 h-3.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    {intId}
+                  </span>
                 ))}
               </div>
             </div>
