@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Bot, Clock, Zap, Webhook, MoreHorizontal, Play, Pause, Trash2, ChevronRight } from "lucide-react";
+import { Plus, Search, Bot, Clock, Zap, Webhook, Trash2, ChevronRight } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
 
@@ -12,12 +12,43 @@ const statusStyles: Record<string, string> = {
   error: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
+/** Apple-style toggle with elastic spring animation */
+const AppleToggle = ({ checked, onChange }: { checked: boolean; onChange: () => void }) => (
+  <motion.button
+    onClick={onChange}
+    className="relative w-[44px] h-[26px] rounded-full p-[2px] cursor-pointer shrink-0"
+    animate={{
+      backgroundColor: checked ? "hsl(142, 71%, 45%)" : "hsl(var(--muted))",
+    }}
+    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+    whileTap={{ scale: 0.92 }}
+    style={{ WebkitTapHighlightColor: "transparent" }}
+  >
+    <motion.div
+      className="w-[22px] h-[22px] rounded-full shadow-md"
+      style={{ backgroundColor: "white" }}
+      animate={{
+        x: checked ? 18 : 0,
+        scale: 1,
+      }}
+      whileTap={{ width: 26 }}
+      transition={{
+        type: "spring",
+        stiffness: 700,
+        damping: 30,
+        mass: 0.8,
+      }}
+    />
+  </motion.button>
+);
+
 const AgentsPage = () => {
   const { agents, toggleAgentStatus, deleteAgent } = usePlatform();
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filtered = agents.filter((a) => {
     const matchSearch = a.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -28,6 +59,15 @@ const AgentsPage = () => {
 
   const statuses = ["all", "active", "inactive", "draft", "error"];
 
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setDeletingId(id);
+    setTimeout(() => {
+      deleteAgent(id);
+      setDeletingId(null);
+    }, 300);
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
@@ -37,12 +77,18 @@ const AgentsPage = () => {
           <p className="text-xs text-muted-foreground mt-0.5">{agents.length} agents configured</p>
         </div>
         <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-foreground text-primary-foreground rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-foreground text-primary-foreground rounded-xl text-sm font-medium hover:bg-foreground/90 transition-colors"
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
-          <Plus size={16} />
+          <motion.span
+            animate={{ rotate: showCreate ? 45 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <Plus size={16} />
+          </motion.span>
           New Agent
         </motion.button>
       </div>
@@ -58,17 +104,25 @@ const AgentsPage = () => {
             className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
           />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 relative">
           {statuses.map((s) => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-colors ${
+              className={`relative px-3 py-1.5 text-xs font-medium rounded-md capitalize transition-colors z-10 ${
                 filterStatus === s
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
+              {filterStatus === s && (
+                <motion.div
+                  layoutId="filterPill"
+                  className="absolute inset-0 bg-accent rounded-md"
+                  style={{ zIndex: -1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
               {s}
             </button>
           ))}
@@ -78,7 +132,12 @@ const AgentsPage = () => {
       {/* Agent List */}
       <div className="flex-1 overflow-y-auto p-6">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="flex flex-col items-center justify-center h-full text-center"
+          >
             <Bot size={48} className="text-muted-foreground/30 mb-4" />
             <p className="text-sm text-muted-foreground">No agents found</p>
             <button
@@ -87,68 +146,104 @@ const AgentsPage = () => {
             >
               Create your first agent
             </button>
-          </div>
+          </motion.div>
         ) : (
           <div className="grid gap-3">
-            {filtered.map((agent, i) => (
-              <motion.div
-                key={agent.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                onClick={() => navigate(`/agents/${agent.id}`)}
-                className="group flex items-center gap-4 p-4 border border-border rounded-xl bg-background hover:bg-accent/40 cursor-pointer transition-colors"
-              >
-                {/* Icon */}
-                <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                  {agent.trigger === "schedule" ? <Clock size={18} className="text-muted-foreground" /> :
-                   agent.trigger === "event" ? <Webhook size={18} className="text-muted-foreground" /> :
-                   <Zap size={18} className="text-muted-foreground" />}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium text-foreground truncate">{agent.name}</h3>
-                    <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full border capitalize ${statusStyles[agent.status]}`}>
-                      {agent.status}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{agent.description}</p>
-                </div>
-
-                {/* Stats */}
-                <div className="hidden sm:flex items-center gap-6 text-xs text-muted-foreground shrink-0">
-                  <div className="text-right">
-                    <p className="font-medium text-foreground">{agent.runs}</p>
-                    <p>runs</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-foreground">{agent.successRate}%</p>
-                    <p>success</p>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); toggleAgentStatus(agent.id); }}
-                    className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-                    title={agent.status === "active" ? "Pause" : "Activate"}
+            <AnimatePresence mode="popLayout">
+              {filtered.map((agent, i) => (
+                <motion.div
+                  key={agent.id}
+                  layout
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                  animate={{
+                    opacity: deletingId === agent.id ? 0 : 1,
+                    y: 0,
+                    scale: deletingId === agent.id ? 0.95 : 1,
+                    x: deletingId === agent.id ? 60 : 0,
+                  }}
+                  exit={{ opacity: 0, scale: 0.95, x: 60 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 35,
+                    delay: i * 0.04,
+                  }}
+                  onClick={() => navigate(`/agents/${agent.id}`)}
+                  className="group flex items-center gap-4 p-4 border border-border rounded-xl bg-background cursor-pointer transition-colors"
+                  whileHover={{
+                    backgroundColor: "hsl(var(--accent) / 0.5)",
+                    y: -1,
+                    transition: { type: "spring", stiffness: 400, damping: 25 },
+                  }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  {/* Icon */}
+                  <motion.div
+                    className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center shrink-0"
+                    whileHover={{ rotate: [0, -8, 8, 0] }}
+                    transition={{ duration: 0.4 }}
                   >
-                    {agent.status === "active" ? <Pause size={14} /> : <Play size={14} />}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); deleteAgent(agent.id); }}
-                    className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                  <ChevronRight size={14} className="text-muted-foreground ml-1" />
-                </div>
-              </motion.div>
-            ))}
+                    {agent.trigger === "schedule" ? <Clock size={18} className="text-muted-foreground" /> :
+                     agent.trigger === "event" ? <Webhook size={18} className="text-muted-foreground" /> :
+                     <Zap size={18} className="text-muted-foreground" />}
+                  </motion.div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-medium text-foreground truncate">{agent.name}</h3>
+                      <motion.span
+                        layout
+                        className={`px-2 py-0.5 text-[10px] font-medium rounded-full border capitalize ${statusStyles[agent.status]}`}
+                      >
+                        {agent.status}
+                      </motion.span>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">{agent.description}</p>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="hidden sm:flex items-center gap-6 text-xs text-muted-foreground shrink-0">
+                    <div className="text-right">
+                      <p className="font-medium text-foreground">{agent.runs}</p>
+                      <p>runs</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-foreground">{agent.successRate}%</p>
+                      <p>success</p>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <AppleToggle
+                      checked={agent.status === "active"}
+                      onChange={() => {
+                        toggleAgentStatus(agent.id);
+                      }}
+                    />
+                    <motion.button
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.85 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      onClick={(e) => handleDelete(e, agent.id)}
+                      className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                      title="Delete"
+                    >
+                      <Trash2 size={14} />
+                    </motion.button>
+                    <motion.div
+                      className="text-muted-foreground ml-1"
+                      animate={{ x: 0 }}
+                      whileHover={{ x: 3 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    >
+                      <ChevronRight size={14} />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </div>
