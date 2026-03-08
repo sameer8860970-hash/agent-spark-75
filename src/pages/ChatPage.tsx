@@ -131,7 +131,7 @@ const ChatPage = () => {
                         <div className="flex items-center gap-0.5">
                           {agent.integrations.slice(0, 3).map((intId) => (
                             <div key={intId} className="w-4 h-4 rounded bg-agent-surface border border-border flex items-center justify-center">
-                              <img src={logos[intId] || `https://cdn.simpleicons.org/${intId}`} alt={intId} className="w-2.5 h-2.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                              <img src={getIntegrationLogo(intId)} alt={intId} className="w-2.5 h-2.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             </div>
                           ))}
                         </div>
