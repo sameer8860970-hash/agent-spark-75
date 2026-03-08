@@ -19,7 +19,6 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = (content: string, attachedIntegrations: Integration[]) => {
-    // Auto-connect any attached integrations
     attachedIntegrations.forEach((int) => {
       const existing = integrations.find((i) => i.id === int.id);
       if (existing && !existing.connected) {
@@ -40,16 +39,15 @@ const ChatPage = () => {
     setTimeout(() => {
       const intNames = attachedIntegrations.map((i) => i.name).join(", ");
       const responseContent = attachedIntegrations.length > 0
-        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I'm analyzing the data now and will have results shortly.\n\n**Status:** Running...` : "What would you like me to do with this integration?"}`
-        : `I understand your request. Let me help you with that.\n\n> ${content}\n\nI'm processing this now. You can type **@** to connect integrations like Slack, WhatsApp, Gmail, and more for enhanced capabilities.\n\n**Tip:** Try creating an agent from the Agents page to automate recurring tasks.`;
+        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I'm analyzing the data now and will have results shortly.` : "What would you like me to do with this integration?"}`
+        : `${content}\n\nI'm processing this now. Type **@** to connect integrations like Slack, WhatsApp, Gmail for enhanced capabilities.`;
 
-      const assistantMsg: Message = {
+      setMessages((prev) => [...prev, {
         id: crypto.randomUUID(),
         role: "assistant",
         content: responseContent,
         timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
+      }]);
       setIsLoading(false);
     }, 1200);
   };
@@ -60,24 +58,24 @@ const ChatPage = () => {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         {!hasMessages ? (
-          <div className="flex flex-col items-center justify-center h-full">
+          <div className="flex flex-col items-center justify-center h-full px-4">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8"
+              className="mb-8 text-center"
             >
-              <h1 className="text-lg font-medium text-foreground text-center">New Chat</h1>
+              <h1 className="text-base font-medium text-foreground">New Chat</h1>
+              <p className="text-xs text-muted-foreground mt-1">Type @ to connect integrations</p>
             </motion.div>
             <ChatInput onSend={handleSend} isLoading={isLoading} integrations={integrations} />
           </div>
         ) : (
-          <div className="max-w-2xl mx-auto py-8 px-4 space-y-6">
+          <div className="max-w-2xl mx-auto py-6 px-4 space-y-5">
             <AnimatePresence>
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className={msg.role === "user" ? "flex justify-end" : ""}
@@ -97,16 +95,16 @@ const ChatPage = () => {
                           ))}
                         </div>
                       )}
-                      <div className="bg-accent rounded-2xl rounded-br-md px-4 py-2.5">
+                      <div className="bg-accent rounded-2xl rounded-br-sm px-3.5 py-2">
                         <p className="text-sm text-foreground">{msg.content}</p>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-primary-foreground text-xs font-bold">A</span>
+                    <div className="flex gap-2.5">
+                      <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-primary-foreground text-[10px] font-bold">A</span>
                       </div>
-                      <div className="flex-1 prose prose-sm max-w-none text-foreground">
+                      <div className="flex-1 prose prose-sm max-w-none text-foreground [&_p]:text-[13px] [&_p]:leading-relaxed [&_strong]:font-semibold">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     </div>
@@ -116,17 +114,17 @@ const ChatPage = () => {
             </AnimatePresence>
 
             {isLoading && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-                <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary-foreground text-xs font-bold">A</span>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2.5">
+                <div className="w-6 h-6 rounded-md bg-foreground flex items-center justify-center flex-shrink-0">
+                  <span className="text-primary-foreground text-[10px] font-bold">A</span>
                 </div>
-                <div className="flex items-center gap-1 pt-2">
+                <div className="flex items-center gap-1 pt-1.5">
                   {[0, 1, 2].map((i) => (
                     <motion.div
                       key={i}
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                      className="w-1.5 h-1.5 rounded-full bg-muted-foreground"
+                      animate={{ opacity: [0.2, 1, 0.2] }}
+                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
+                      className="w-1 h-1 rounded-full bg-muted-foreground"
                     />
                   ))}
                 </div>
