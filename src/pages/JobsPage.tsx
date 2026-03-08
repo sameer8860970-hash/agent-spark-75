@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight, MoreHorizontal, MessageSquare, Clock, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePlatform } from "@/context/PlatformContext";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const statusStyles: Record<string, string> = {
   "Done": "bg-status-done-bg text-status-done",
