@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Image, ChevronDown, Sparkles } from "lucide-react";
 import IntegrationPicker from "./IntegrationPicker";
+import ConnectionCard from "./ConnectionCard";
 import type { Integration } from "@/context/PlatformContext";
 
 interface ChatInputProps {
@@ -15,6 +16,7 @@ const ChatInput = ({ onSend, isLoading, integrations }: ChatInputProps) => {
   const [showPicker, setShowPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [attachedIntegrations, setAttachedIntegrations] = useState<Integration[]>([]);
+  const [justConnected, setJustConnected] = useState<Integration | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInputChange = (value: string) => {
@@ -43,7 +45,9 @@ const ChatInput = ({ onSend, isLoading, integrations }: ChatInputProps) => {
     setShowPicker(false);
 
     if (!attachedIntegrations.find((i) => i.id === integration.id)) {
-      setAttachedIntegrations((prev) => [...prev, { ...integration, connected: true }]);
+      const connected = { ...integration, connected: true };
+      setAttachedIntegrations((prev) => [...prev, connected]);
+      setJustConnected(connected);
     }
 
     setTimeout(() => textareaRef.current?.focus(), 0);
@@ -109,8 +113,15 @@ const ChatInput = ({ onSend, isLoading, integrations }: ChatInputProps) => {
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-accent text-sm text-foreground cursor-pointer hover:bg-border transition-colors"
                   onClick={() => removeIntegration(integration.id)}
                 >
-                  <span>{integration.icon}</span>
-                  <span className="font-medium">{integration.name}</span>
+                  <img
+                    src={integration.logo}
+                    alt={integration.name}
+                    className="w-3.5 h-3.5"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                  <span className="font-medium text-xs">{integration.name}</span>
                   {integration.connected && (
                     <span className="w-1.5 h-1.5 rounded-full bg-status-done" />
                   )}
@@ -163,6 +174,16 @@ const ChatInput = ({ onSend, isLoading, integrations }: ChatInputProps) => {
         <span className="text-xs text-muted-foreground">☐ Local</span>
         <ChevronDown size={11} className="text-muted-foreground" />
       </div>
+
+      {/* Connection card popup */}
+      <AnimatePresence>
+        {justConnected && (
+          <ConnectionCard
+            integration={justConnected}
+            onClose={() => setJustConnected(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
