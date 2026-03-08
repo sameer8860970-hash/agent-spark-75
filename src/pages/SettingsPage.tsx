@@ -42,6 +42,7 @@ const SettingsPage = () => {
   });
   const [theme, setTheme] = useState("Light");
   const [connectorSearch, setConnectorSearch] = useState("");
+  const [mdPreview, setMdPreview] = useState(false);
 
   const handleCopy = (key: string, value: string) => {
     navigator.clipboard.writeText(value);
