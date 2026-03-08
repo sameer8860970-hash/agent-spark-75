@@ -132,7 +132,7 @@ const AgentsPage = () => {
       </div>
 
       {/* Agent List */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+      <PullToRefresh onRefresh={handleRefresh} className="p-4 md:p-6 pb-24 md:pb-6">
         {filtered.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
