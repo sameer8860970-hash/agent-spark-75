@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 const navItems = [
   { icon: MessageSquare, path: "/", label: "Chat" },
+  { icon: Bot, path: "/agents", label: "Agents" },
   { icon: Layers, path: "/jobs", label: "Jobs" },
 ];
 
