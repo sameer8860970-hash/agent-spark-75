@@ -25,7 +25,7 @@ const JobsPage = () => {
   });
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 p-6 pb-24 md:pb-6 overflow-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div>

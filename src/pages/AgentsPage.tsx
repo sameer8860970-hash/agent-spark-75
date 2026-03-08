@@ -94,7 +94,7 @@ const AgentsPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="px-6 py-3 flex items-center gap-3 border-b border-border shrink-0">
+      <div className="px-4 md:px-6 py-3 flex flex-wrap items-center gap-3 border-b border-border shrink-0">
         <div className="relative flex-1 max-w-xs">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
