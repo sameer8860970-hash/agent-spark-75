@@ -79,7 +79,7 @@ const generateThinkingSteps = (content: string, attachedIntegrations: Integratio
   return steps;
 };
 
-const ThinkingPopup = ({ steps, exploredSummary, isActive }: { steps: ThinkingStep[]; exploredSummary: string; isActive: boolean }) => {
+const ThinkingPopup = forwardRef<HTMLDivElement, { steps: ThinkingStep[]; exploredSummary: string; isActive: boolean }>(({ steps, exploredSummary, isActive }, ref) => {
   const [expanded, setExpanded] = useState(isActive);
 
   return (
