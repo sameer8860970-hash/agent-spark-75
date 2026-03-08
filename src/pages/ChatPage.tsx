@@ -7,6 +7,8 @@ import { getIntegrationLogo } from "@/lib/integrationLogos";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
+import { streamChat } from "@/lib/streamChat";
+import { toast } from "sonner";
 import type { Integration } from "@/context/PlatformContext";
 
 interface ThinkingStep {
