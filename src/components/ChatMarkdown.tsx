@@ -62,7 +62,7 @@ const MermaidBlock = ({ code, isStreaming }: { code: string; isStreaming?: boole
   return (
     <div
       ref={containerRef}
-      className="my-3 flex justify-center [&_svg]:max-w-full overflow-x-auto"
+      className="my-3 flex justify-center overflow-x-auto [&_svg]:w-full [&_svg]:max-w-none [&_svg]:min-h-[200px]"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );
