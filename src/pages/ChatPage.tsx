@@ -158,7 +158,6 @@ const ThinkingPopup = forwardRef<HTMLDivElement, { steps: ThinkingStep[]; explor
   );
 });
 ThinkingPopup.displayName = "ThinkingPopup";
-};
 
 const ChatPage = () => {
   const { integrations, toggleIntegration, agents } = usePlatform();
