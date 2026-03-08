@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight } from "lucide-react";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
+import CreateAgentModal from "@/components/CreateAgentModal";
 import type { Integration } from "@/context/PlatformContext";
 
 interface Message {
@@ -13,10 +16,19 @@ interface Message {
   timestamp: Date;
 }
 
+const statusStyles: Record<string, string> = {
+  active: "bg-status-done-bg text-status-done",
+  inactive: "bg-status-queued-bg text-status-queued",
+  draft: "bg-status-pending-bg text-status-pending",
+  error: "bg-status-failed-bg text-status-failed",
+};
+
 const ChatPage = () => {
-  const { integrations, toggleIntegration } = usePlatform();
+  const { integrations, toggleIntegration, agents } = usePlatform();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const navigate = useNavigate();
 
   const handleSend = (content: string, attachedIntegrations: Integration[]) => {
     attachedIntegrations.forEach((int) => {
@@ -53,6 +65,7 @@ const ChatPage = () => {
   };
 
   const hasMessages = messages.length > 0;
+  const activeAgents = agents.filter((a) => a.status === "active");
 
   return (
     <div className="flex flex-col h-full">
@@ -62,12 +75,85 @@ const ChatPage = () => {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8 text-center"
+              className="mb-6 text-center"
             >
               <h1 className="text-base font-medium text-foreground">New Chat</h1>
               <p className="text-xs text-muted-foreground mt-1">Type @ to connect integrations</p>
             </motion.div>
+
             <ChatInput onSend={handleSend} isLoading={isLoading} integrations={integrations} />
+
+            {/* Agents section below chat input */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="w-full max-w-2xl mt-8"
+            >
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Your Agents</h2>
+                <button
+                  onClick={() => setShowCreate(true)}
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Plus size={12} />
+                  New
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {agents.slice(0, 6).map((agent, i) => {
+                  const TriggerIcon = agent.trigger === "schedule" ? Clock : agent.trigger === "event" ? Webhook : Zap;
+                  const logos: Record<string, string> = {
+                    whatsapp: "https://cdn.simpleicons.org/whatsapp",
+                    slack: "https://cdn.simpleicons.org/slack",
+                    gmail: "https://cdn.simpleicons.org/gmail",
+                    jira: "https://cdn.simpleicons.org/jira",
+                    hubspot: "https://cdn.simpleicons.org/hubspot",
+                    amplitude: "https://cdn.simpleicons.org/amplitude",
+                    postgres: "https://cdn.simpleicons.org/postgresql",
+                    s3: "https://cdn.simpleicons.org/amazons3",
+                  };
+                  return (
+                    <motion.div
+                      key={agent.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.05 }}
+                      onClick={() => navigate(`/agents/${agent.id}`)}
+                      className="group border border-border rounded-lg p-3 hover:border-foreground/15 transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <h3 className="text-xs font-medium text-foreground truncate flex-1">{agent.name}</h3>
+                        <ArrowUpRight size={10} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-1" />
+                      </div>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <span className={`text-[9px] px-1 py-px rounded font-medium ${statusStyles[agent.status]}`}>
+                          {agent.status}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground flex items-center gap-0.5">
+                          <TriggerIcon size={8} />
+                          {agent.schedule || agent.trigger}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-0.5">
+                          {agent.integrations.slice(0, 3).map((intId) => (
+                            <div key={intId} className="w-4 h-4 rounded bg-agent-surface border border-border flex items-center justify-center">
+                              <img src={logos[intId] || `https://cdn.simpleicons.org/${intId}`} alt={intId} className="w-2.5 h-2.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            </div>
+                          ))}
+                        </div>
+                        <span className="text-[9px] text-muted-foreground flex items-center gap-0.5">
+                          <Activity size={8} />
+                          {agent.runs}
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
           </div>
         ) : (
           <div className="max-w-2xl mx-auto py-6 px-4 space-y-5">
@@ -85,10 +171,7 @@ const ChatPage = () => {
                       {msg.integrations && msg.integrations.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-1.5 justify-end">
                           {msg.integrations.map((int) => (
-                            <span
-                              key={int.id}
-                              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-accent text-xs font-medium text-foreground"
-                            >
+                            <span key={int.id} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-accent text-xs font-medium text-foreground">
                               <img src={int.logo} alt={int.name} className="w-3 h-3" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                               {int.name}
                             </span>
@@ -120,12 +203,7 @@ const ChatPage = () => {
                 </div>
                 <div className="flex items-center gap-1 pt-1.5">
                   {[0, 1, 2].map((i) => (
-                    <motion.div
-                      key={i}
-                      animate={{ opacity: [0.2, 1, 0.2] }}
-                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }}
-                      className="w-1 h-1 rounded-full bg-muted-foreground"
-                    />
+                    <motion.div key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.15 }} className="w-1 h-1 rounded-full bg-muted-foreground" />
                   ))}
                 </div>
               </motion.div>
@@ -139,6 +217,10 @@ const ChatPage = () => {
           <ChatInput onSend={handleSend} isLoading={isLoading} integrations={integrations} />
         </div>
       )}
+
+      <AnimatePresence>
+        {showCreate && <CreateAgentModal onClose={() => setShowCreate(false)} />}
+      </AnimatePresence>
     </div>
   );
 };
