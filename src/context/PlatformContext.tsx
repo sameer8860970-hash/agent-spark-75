@@ -189,6 +189,8 @@ interface PlatformContextType {
   setIntegrations: React.Dispatch<React.SetStateAction<Integration[]>>;
   jobs: Job[];
   setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
+  knowledgeContext: string;
+  setKnowledgeContext: React.Dispatch<React.SetStateAction<string>>;
   toggleIntegration: (id: string) => void;
   addAgent: (agent: Agent) => void;
   updateAgent: (agent: Agent) => void;
@@ -208,6 +210,7 @@ export const PlatformProvider = ({ children }: { children: ReactNode }) => {
   const [agents, setAgents] = useState<Agent[]>(SAMPLE_AGENTS);
   const [integrations, setIntegrations] = useState<Integration[]>(INTEGRATIONS);
   const [jobs, setJobs] = useState<Job[]>(SAMPLE_JOBS);
+  const [knowledgeContext, setKnowledgeContext] = useState<string>("");
 
   const toggleIntegration = (id: string) => {
     setIntegrations((prev) =>
@@ -243,6 +246,7 @@ export const PlatformProvider = ({ children }: { children: ReactNode }) => {
         agents, setAgents,
         integrations, setIntegrations,
         jobs, setJobs,
+        knowledgeContext, setKnowledgeContext,
         toggleIntegration,
         addAgent, updateAgent, deleteAgent, toggleAgentStatus,
       }}
