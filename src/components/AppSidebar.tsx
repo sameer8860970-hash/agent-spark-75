@@ -90,7 +90,13 @@ const AppSidebar = () => {
       </div>
 
       {/* Mobile bottom nav - Telegram style */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/80 backdrop-blur-xl flex items-center justify-around px-4 pt-1.5 pb-1 safe-area-bottom">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-4 pt-2 pb-1.5 safe-area-bottom"
+        style={{
+          background: "linear-gradient(to top, hsl(var(--background) / 0.92) 60%, hsl(var(--background) / 0.6) 85%, transparent 100%)",
+          backdropFilter: "blur(24px) saturate(180%)",
+          WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        }}
+      >
         {navItems.map((item) => {
           const isActive = item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
           return (
