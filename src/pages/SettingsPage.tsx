@@ -7,6 +7,7 @@ import {
   Webhook, Zap, Terminal, Filter, ChevronRight, ToggleLeft
 } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
+import ChatMarkdown from "@/components/ChatMarkdown";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 const tabs = [
