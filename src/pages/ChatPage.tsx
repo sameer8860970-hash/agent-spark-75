@@ -160,7 +160,7 @@ const ThinkingPopup = forwardRef<HTMLDivElement, { steps: ThinkingStep[]; explor
 ThinkingPopup.displayName = "ThinkingPopup";
 
 const ChatPage = () => {
-  const { integrations, toggleIntegration, agents } = usePlatform();
+  const { integrations, toggleIntegration, agents, knowledgeContext } = usePlatform();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
