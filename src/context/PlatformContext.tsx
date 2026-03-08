@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 export interface Integration {
   id: string;
