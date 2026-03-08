@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Play, Pause, Clock, Webhook, Zap, Settings, Activity, FileText } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
+import { getIntegrationLogo } from "@/lib/integrationLogos";
 import { useState } from "react";
 
 const stepTypeStyles: Record<string, string> = {
