@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, forwardRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -15,26 +15,95 @@ mermaid.initialize({
 let mermaidCounter = 0;
 
 const MermaidBlock = memo(({ code }: { code: string }) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState("");
+  const [error, setError] = useState(false);
   const idRef = useRef(`mermaid-${++mermaidCounter}`);
 
   useEffect(() => {
+    // Don't attempt to render incomplete/very short diagrams
+    const trimmed = code.trim();
+    if (trimmed.length < 10 || !trimmed.includes("\n")) {
+      setSvg("");
+      setError(false);
+      return;
+    }
+
+    let cancelled = false;
+    const id = `m-${idRef.current}-${Date.now()}`;
+
     mermaid
-      .render(idRef.current, code)
-      .then(({ svg }) => setSvg(svg))
-      .catch(() => setSvg(`<pre class="text-xs text-destructive">Invalid diagram</pre>`));
+      .render(id, trimmed)
+      .then(({ svg: renderedSvg }) => {
+        if (!cancelled) {
+          setSvg(renderedSvg);
+          setError(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSvg("");
+          setError(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [code]);
+
+  if (error) {
+    return (
+      <pre className="my-2 p-2.5 bg-muted rounded-md text-xs text-muted-foreground overflow-x-auto">
+        <code>{code}</code>
+      </pre>
+    );
+  }
+
+  if (!svg) {
+    return (
+      <pre className="my-2 p-2.5 bg-muted rounded-md text-xs overflow-x-auto">
+        <code>{code}</code>
+      </pre>
+    );
+  }
 
   return (
     <div
-      ref={ref}
-      className="my-3 flex justify-center [&_svg]:max-w-full"
+      ref={containerRef}
+      className="my-3 flex justify-center [&_svg]:max-w-full overflow-x-auto"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );
 });
 MermaidBlock.displayName = "MermaidBlock";
+
+// Wrap code component with forwardRef to avoid React warning
+const CodeBlock = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement> & { className?: string; children?: React.ReactNode }>(
+  ({ className, children, ...props }, ref) => {
+    const match = /language-(\w+)/.exec(className || "");
+    const codeStr = String(children).replace(/\n$/, "");
+
+    if (match?.[1] === "mermaid") {
+      return <MermaidBlock code={codeStr} />;
+    }
+
+    if (className) {
+      return (
+        <code ref={ref} className={className} {...props}>
+          {children}
+        </code>
+      );
+    }
+
+    return (
+      <code ref={ref} className="text-xs bg-muted px-1 py-0.5 rounded" {...props}>
+        {children}
+      </code>
+    );
+  }
+);
+CodeBlock.displayName = "CodeBlock";
 
 const ChatMarkdown = ({ content }: { content: string }) => {
   return (
@@ -43,28 +112,7 @@ const ChatMarkdown = ({ content }: { content: string }) => {
         remarkPlugins={[remarkMath, remarkGfm]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          code({ className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || "");
-            const codeStr = String(children).replace(/\n$/, "");
-
-            if (match?.[1] === "mermaid") {
-              return <MermaidBlock code={codeStr} />;
-            }
-
-            if (className) {
-              return (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            }
-
-            return (
-              <code className="text-xs bg-muted px-1 py-0.5 rounded" {...props}>
-                {children}
-              </code>
-            );
-          },
+          code: CodeBlock as any,
         }}
       >
         {content}
