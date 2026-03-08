@@ -156,6 +156,8 @@ const ThinkingPopup = forwardRef<HTMLDivElement, { steps: ThinkingStep[]; explor
       </AnimatePresence>
     </motion.div>
   );
+});
+ThinkingPopup.displayName = "ThinkingPopup";
 };
 
 const ChatPage = () => {
