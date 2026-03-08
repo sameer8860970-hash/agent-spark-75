@@ -455,11 +455,11 @@ const SettingsPage = () => {
     <div className="flex-1 flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {activeSection ? (
-          <motion.div key="detail" initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 60, opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col overflow-hidden">
+          <motion.div key="detail" initial={{ x: 80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 80, opacity: 0 }} transition={{ type: "spring", stiffness: 400, damping: 28 }} className="flex-1 flex flex-col overflow-hidden">
             <DetailView />
           </motion.div>
         ) : (
-          <motion.div key="menu" initial={{ x: -60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -60, opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col overflow-hidden">
+          <motion.div key="menu" initial={{ x: -80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -80, opacity: 0 }} transition={{ type: "spring", stiffness: 400, damping: 28 }} className="flex-1 flex flex-col overflow-hidden">
             <MenuView />
           </motion.div>
         )}
