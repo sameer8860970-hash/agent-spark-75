@@ -84,6 +84,8 @@ const IntegrationPicker = forwardRef<HTMLDivElement, IntegrationPickerProps>(({ 
       </div>
     </motion.div>
   );
-};
+});
+
+IntegrationPicker.displayName = "IntegrationPicker";
 
 export default IntegrationPicker;
