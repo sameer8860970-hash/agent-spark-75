@@ -2,52 +2,24 @@ import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Image, ChevronDown, Sparkles } from "lucide-react";
 import IntegrationPicker from "./IntegrationPicker";
-
-export interface Integration {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  connected: boolean;
-}
-
-const INTEGRATIONS: Integration[] = [
-  { id: "slack", name: "Slack", icon: "💬", color: "hsl(var(--status-process))", connected: false },
-  { id: "whatsapp", name: "WhatsApp", icon: "📱", color: "hsl(var(--status-done))", connected: false },
-  { id: "gmail", name: "Gmail", icon: "✉️", color: "hsl(var(--status-failed))", connected: false },
-  { id: "drive", name: "Google Drive", icon: "📁", color: "hsl(var(--status-pending))", connected: false },
-  { id: "notion", name: "Notion", icon: "📝", color: "hsl(var(--foreground))", connected: false },
-  { id: "github", name: "GitHub", icon: "🐙", color: "hsl(var(--foreground))", connected: false },
-  { id: "jira", name: "Jira", icon: "🔷", color: "hsl(var(--status-process))", connected: false },
-  { id: "hubspot", name: "HubSpot", icon: "🟠", color: "hsl(var(--status-pending))", connected: false },
-  { id: "salesforce", name: "Salesforce", icon: "☁️", color: "hsl(var(--status-process))", connected: false },
-  { id: "twilio", name: "Twilio", icon: "📞", color: "hsl(var(--status-failed))", connected: false },
-  { id: "stripe", name: "Stripe", icon: "💳", color: "hsl(var(--status-process))", connected: false },
-  { id: "zapier", name: "Zapier", icon: "⚡", color: "hsl(var(--status-pending))", connected: false },
-  { id: "amplitude", name: "Amplitude", icon: "📊", color: "hsl(var(--status-process))", connected: false },
-  { id: "postgres", name: "PostgreSQL", icon: "🐘", color: "hsl(var(--status-process))", connected: false },
-  { id: "mongodb", name: "MongoDB", icon: "🍃", color: "hsl(var(--status-done))", connected: false },
-];
+import type { Integration } from "@/context/PlatformContext";
 
 interface ChatInputProps {
   onSend: (message: string, attachedIntegrations: Integration[]) => void;
   isLoading: boolean;
+  integrations: Integration[];
 }
 
-const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
+const ChatInput = ({ onSend, isLoading, integrations }: ChatInputProps) => {
   const [input, setInput] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [attachedIntegrations, setAttachedIntegrations] = useState<Integration[]>([]);
-  const [cursorPosition, setCursorPosition] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInputChange = (value: string) => {
     setInput(value);
     const pos = textareaRef.current?.selectionStart || 0;
-    setCursorPosition(pos);
-
-    // Check if @ was just typed
     const textBeforeCursor = value.slice(0, pos);
     const lastAtIndex = textBeforeCursor.lastIndexOf("@");
     
@@ -63,7 +35,6 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
   };
 
   const handleSelectIntegration = (integration: Integration) => {
-    // Remove the @query from input
     const pos = textareaRef.current?.selectionStart || 0;
     const textBeforeCursor = input.slice(0, pos);
     const lastAtIndex = textBeforeCursor.lastIndexOf("@");
@@ -99,7 +70,6 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
     }
   };
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -112,7 +82,7 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
       <AnimatePresence>
         {showPicker && (
           <IntegrationPicker
-            integrations={INTEGRATIONS}
+            integrations={integrations}
             searchQuery={searchQuery}
             onSelect={handleSelectIntegration}
             onClose={() => setShowPicker(false)}
@@ -121,7 +91,6 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
       </AnimatePresence>
 
       <div className="border border-border rounded-xl bg-background shadow-sm">
-        {/* Attached integrations */}
         <AnimatePresence>
           {attachedIntegrations.length > 0 && (
             <motion.div
@@ -142,6 +111,9 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
                 >
                   <span>{integration.icon}</span>
                   <span className="font-medium">{integration.name}</span>
+                  {integration.connected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-status-done" />
+                  )}
                   <span className="text-muted-foreground text-xs ml-0.5">×</span>
                 </motion.div>
               ))}
@@ -149,7 +121,6 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
           )}
         </AnimatePresence>
 
-        {/* Textarea */}
         <textarea
           ref={textareaRef}
           value={input}
@@ -160,7 +131,6 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
           className="w-full resize-none bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
         />
 
-        {/* Bottom bar */}
         <div className="flex items-center justify-between px-3 pb-2.5">
           <div className="flex items-center gap-2">
             <button className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors">
@@ -189,7 +159,6 @@ const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
         </div>
       </div>
 
-      {/* Local indicator */}
       <div className="flex items-center gap-1.5 mt-2 px-1">
         <span className="text-xs text-muted-foreground">☐ Local</span>
         <ChevronDown size={11} className="text-muted-foreground" />
