@@ -1,62 +1,104 @@
-import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { MessageSquare, Layers, Users, Star, LayoutGrid, Settings } from "lucide-react";
+import { MessageSquare, Layers, Bot, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
   { icon: MessageSquare, path: "/", label: "Chat" },
+  { icon: Bot, path: "/agents", label: "Agents" },
   { icon: Layers, path: "/jobs", label: "Jobs" },
-  { icon: Users, path: "/agents", label: "Agents" },
-  { icon: LayoutGrid, path: "/integrations", label: "Integrations" },
-  { icon: Star, path: "/favorites", label: "Favorites" },
 ];
 
 const AppSidebar = () => {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col items-center w-14 border-r border-border bg-background py-4 gap-1">
+    <div className="flex flex-col items-center w-[52px] border-r border-border bg-background py-3 gap-0.5">
       {/* Logo */}
-      <div className="mb-4 flex items-center justify-center w-9 h-9 rounded-lg bg-foreground">
-        <span className="text-primary-foreground font-bold text-sm">A</span>
-      </div>
+      <Link to="/">
+        <motion.div
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          className="mb-5 flex items-center justify-center w-8 h-8 rounded-lg bg-foreground"
+        >
+          <span className="text-primary-foreground font-bold text-xs">A</span>
+        </motion.div>
+      </Link>
 
       {/* Nav items */}
       {navItems.map((item) => {
-        const isActive = location.pathname === item.path;
+        const isActive =
+          item.path === "/"
+            ? location.pathname === "/"
+            : location.pathname.startsWith(item.path);
         return (
-          <Link key={item.path} to={item.path} title={item.label}>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "w-10 h-10 flex items-center justify-center rounded-lg transition-colors cursor-pointer",
-                isActive
-                  ? "bg-accent text-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              )}
-            >
-              <item.icon size={20} strokeWidth={1.5} />
-            </motion.div>
-          </Link>
+          <Tooltip key={item.path}>
+            <TooltipTrigger asChild>
+              <Link to={item.path}>
+                <motion.div
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={cn(
+                    "w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer relative",
+                    isActive
+                      ? "bg-accent text-foreground"
+                      : "text-muted-foreground hover:bg-accent/70 hover:text-foreground"
+                  )}
+                >
+                  <item.icon size={18} strokeWidth={1.5} />
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[7px] w-[3px] h-4 bg-foreground rounded-r-full"
+                    />
+                  )}
+                </motion.div>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+              <p className="text-xs">{item.label}</p>
+            </TooltipContent>
+          </Tooltip>
         );
       })}
 
-      <div className="mt-auto">
-        <Link to="/settings" title="Settings">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-10 h-10 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer"
-          >
-            <Settings size={20} strokeWidth={1.5} />
-          </motion.div>
-        </Link>
+      <div className="mt-auto flex flex-col items-center gap-0.5">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link to="/settings">
+              <motion.div
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "w-9 h-9 flex items-center justify-center rounded-lg transition-all cursor-pointer relative",
+                  location.pathname === "/settings"
+                    ? "bg-accent text-foreground"
+                    : "text-muted-foreground hover:bg-accent/70 hover:text-foreground"
+                )}
+              >
+                <Settings size={18} strokeWidth={1.5} />
+                {location.pathname === "/settings" && (
+                  <motion.div
+                    layoutId="activeIndicator"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[7px] w-[3px] h-4 bg-foreground rounded-r-full"
+                  />
+                )}
+              </motion.div>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={8}>
+            <p className="text-xs">Settings</p>
+          </TooltipContent>
+        </Tooltip>
+
         {/* Avatar */}
-        <div className="mt-2 w-8 h-8 mx-auto rounded-full bg-status-process flex items-center justify-center">
-          <span className="text-primary-foreground text-xs font-medium">T</span>
-        </div>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="mt-1 w-7 h-7 rounded-full bg-foreground/10 border border-border flex items-center justify-center cursor-pointer"
+        >
+          <span className="text-foreground text-[10px] font-semibold">T</span>
+        </motion.div>
       </div>
     </div>
   );
