@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight, MoreHorizontal, MessageSquare, Clock, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { usePlatform } from "@/context/PlatformContext";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const statusStyles: Record<string, string> = {
   "Done": "bg-status-done-bg text-status-done",
@@ -23,6 +24,10 @@ const JobsPage = () => {
     const matchesStatus = statusFilter === "All" || j.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const handleRefresh = useCallback(async () => {
+    await new Promise((r) => setTimeout(r, 800));
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -70,7 +75,7 @@ const JobsPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+      <PullToRefresh onRefresh={handleRefresh} className="p-4 md:p-6 pb-24 md:pb-6">
         {/* Mobile: Card layout */}
         <div className="md:hidden grid gap-2.5">
           {filteredJobs.map((job, index) => (
@@ -167,7 +172,7 @@ const JobsPage = () => {
         {filteredJobs.length === 0 && (
           <div className="py-12 text-center text-sm text-muted-foreground">No jobs found</div>
         )}
-      </div>
+      </PullToRefresh>
     </div>
   );
 };

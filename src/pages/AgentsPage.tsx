@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Bot, Clock, Zap, Webhook, Trash2, ChevronRight } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
@@ -68,6 +69,10 @@ const AgentsPage = () => {
     }, 300);
   };
 
+  const handleRefresh = useCallback(async () => {
+    await new Promise((r) => setTimeout(r, 800));
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
@@ -131,7 +136,7 @@ const AgentsPage = () => {
       </div>
 
       {/* Agent List */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+      <PullToRefresh onRefresh={handleRefresh} className="p-4 md:p-6 pb-24 md:pb-6">
         {filtered.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -252,7 +257,7 @@ const AgentsPage = () => {
             </AnimatePresence>
           </div>
         )}
-      </div>
+      </PullToRefresh>
 
       <AnimatePresence>
         {showCreate && <CreateAgentModal onClose={() => setShowCreate(false)} />}
