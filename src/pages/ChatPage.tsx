@@ -275,8 +275,8 @@ const ChatPage = () => {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {!hasMessages ? (
           <div className="flex flex-col items-center justify-center h-full px-4">
             <motion.div
@@ -429,7 +429,7 @@ const ChatPage = () => {
       </div>
 
       {hasMessages && (
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 flex-shrink-0">
           <ChatInput onSend={handleSend} isLoading={isLoading} integrations={integrations} />
         </div>
       )}
