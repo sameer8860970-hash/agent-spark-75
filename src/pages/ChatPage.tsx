@@ -169,7 +169,7 @@ const ChatPage = () => {
   const [activeThinkingSteps, setActiveThinkingSteps] = useState<ThinkingStep[]>([]);
   const [activeExploreSummary, setActiveExploreSummary] = useState("");
   const navigate = useNavigate();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
 
   const lastMsgContent = messages[messages.length - 1]?.content;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -454,7 +454,7 @@ const ChatPage = () => {
                 </div>
               </motion.div>
             )}
-            <div ref={messagesEndRef} />
+            
           </div>
         )}
       </div>
