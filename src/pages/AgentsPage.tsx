@@ -253,7 +253,7 @@ const AgentsPage = () => {
             </AnimatePresence>
           </div>
         )}
-      </div>
+      </PullToRefresh>
 
       <AnimatePresence>
         {showCreate && <CreateAgentModal onClose={() => setShowCreate(false)} />}
