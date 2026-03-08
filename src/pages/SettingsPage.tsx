@@ -27,7 +27,7 @@ const tabs = [
 
 const SettingsPage = () => {
   const [tab, setTab] = useState("profile");
-  const { integrations, toggleIntegration } = usePlatform();
+  const { integrations, toggleIntegration, knowledgeContext, setKnowledgeContext } = usePlatform();
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState<string | null>(null);
   const [notifSettings, setNotifSettings] = useState({
