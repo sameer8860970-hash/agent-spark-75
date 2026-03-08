@@ -210,6 +210,7 @@ export const PlatformProvider = ({ children }: { children: ReactNode }) => {
   const [agents, setAgents] = useState<Agent[]>(SAMPLE_AGENTS);
   const [integrations, setIntegrations] = useState<Integration[]>(INTEGRATIONS);
   const [jobs, setJobs] = useState<Job[]>(SAMPLE_JOBS);
+  const [knowledgeContext, setKnowledgeContext] = useState<string>("");
 
   const toggleIntegration = (id: string) => {
     setIntegrations((prev) =>
