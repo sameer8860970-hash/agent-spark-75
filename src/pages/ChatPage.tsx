@@ -429,7 +429,7 @@ const ChatPage = () => {
       </div>
 
       {hasMessages && (
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 flex-shrink-0">
           <ChatInput onSend={handleSend} isLoading={isLoading} integrations={integrations} />
         </div>
       )}
