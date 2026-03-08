@@ -25,6 +25,10 @@ const JobsPage = () => {
     return matchesSearch && matchesStatus;
   });
 
+  const handleRefresh = useCallback(async () => {
+    await new Promise((r) => setTimeout(r, 800));
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
