@@ -90,26 +90,27 @@ const AppSidebar = () => {
       </div>
 
       {/* Mobile bottom nav - Telegram style */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-4 pt-2 pb-1.5 safe-area-bottom"
-        style={{
-          background: "linear-gradient(to top, hsl(var(--background) / 0.92) 60%, hsl(var(--background) / 0.6) 85%, transparent 100%)",
-          backdropFilter: "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        }}
-      >
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-md flex items-center justify-around px-2 pt-1 pb-1 safe-area-bottom">
         {navItems.map((item) => {
           const isActive = item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
           return (
-            <Link key={item.path} to={item.path} className="flex flex-col items-center gap-0.5 py-1 min-w-[56px]">
+            <Link key={item.path} to={item.path} className="flex flex-col items-center gap-[2px] py-1 min-w-[60px]">
               <div className={cn(
-                "w-10 h-7 flex items-center justify-center rounded-full transition-colors",
-                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                "w-[52px] h-[28px] flex items-center justify-center rounded-full transition-all duration-200",
+                isActive ? "bg-[hsl(210,90%,93%)]" : ""
               )}>
-                <item.icon size={20} strokeWidth={1.5} />
+                <item.icon
+                  size={22}
+                  strokeWidth={1.6}
+                  className={cn(
+                    "transition-colors duration-200",
+                    isActive ? "text-[hsl(210,80%,55%)]" : "text-muted-foreground"
+                  )}
+                />
               </div>
               <span className={cn(
-                "text-[10px] leading-tight",
-                isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                "text-[11px] leading-tight transition-colors duration-200",
+                isActive ? "text-[hsl(210,80%,55%)] font-semibold" : "text-muted-foreground font-medium"
               )}>
                 {item.label}
               </span>
