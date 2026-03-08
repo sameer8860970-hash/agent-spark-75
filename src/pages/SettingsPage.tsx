@@ -11,20 +11,20 @@ import ChatMarkdown from "@/components/ChatMarkdown";
 import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 const settingsMenu = [
-  { key: "profile", icon: User, label: "Account", description: "Name, Email, Bio" },
-  { key: "brain", icon: Brain, label: "Agent Brain", description: "Persona, Memory, Guardrails" },
-  { key: "knowledge", icon: FileText, label: "Knowledge & Files", description: "Documents, Context" },
-  { key: "connectors", icon: Link2, label: "Connectors", description: "Integrations, APIs" },
-  { key: "tasks", icon: Clock, label: "Tasks & Automations", description: "Schedules, Triggers" },
-  { key: "api", icon: Key, label: "Secrets & Keys", description: "API Keys, Tokens" },
-  { key: "security", icon: Shield, label: "Privacy & Security", description: "2FA, Sessions, Audit" },
-  { key: "notifications", icon: Bell, label: "Notifications", description: "Sounds, Alerts, Badges" },
-  { key: "observability", icon: Activity, label: "Observability", description: "Logs, Metrics" },
-  { key: "billing", icon: CreditCard, label: "Billing", description: "Plan, Usage" },
-  { key: "devices", icon: Smartphone, label: "Devices", description: "Manage connected devices" },
-  { key: "appearance", icon: Palette, label: "Appearance", description: "Theme, Layout" },
-  { key: "data", icon: Download, label: "Data & Export", description: "Backup, Export" },
-  { key: "language", icon: Globe, label: "Language", description: "English" },
+  { key: "profile", icon: User, label: "Account", description: "Name, Email, Bio", iconColor: "text-[hsl(210,80%,55%)]" },
+  { key: "brain", icon: Brain, label: "Agent Brain", description: "Persona, Memory, Guardrails", iconColor: "text-[hsl(280,70%,55%)]" },
+  { key: "knowledge", icon: FileText, label: "Knowledge & Files", description: "Documents, Context", iconColor: "text-[hsl(35,90%,55%)]" },
+  { key: "connectors", icon: Link2, label: "Connectors", description: "Integrations, APIs", iconColor: "text-[hsl(145,65%,45%)]" },
+  { key: "tasks", icon: Clock, label: "Tasks & Automations", description: "Schedules, Triggers", iconColor: "text-[hsl(200,80%,50%)]" },
+  { key: "api", icon: Key, label: "Secrets & Keys", description: "API Keys, Tokens", iconColor: "text-[hsl(340,70%,55%)]" },
+  { key: "security", icon: Shield, label: "Privacy & Security", description: "2FA, Sessions, Audit", iconColor: "text-[hsl(145,65%,45%)]" },
+  { key: "notifications", icon: Bell, label: "Notifications", description: "Sounds, Alerts, Badges", iconColor: "text-[hsl(0,75%,55%)]" },
+  { key: "observability", icon: Activity, label: "Observability", description: "Logs, Metrics", iconColor: "text-[hsl(160,60%,45%)]" },
+  { key: "billing", icon: CreditCard, label: "Billing", description: "Plan, Usage", iconColor: "text-[hsl(260,60%,55%)]" },
+  { key: "devices", icon: Smartphone, label: "Devices", description: "Manage connected devices", iconColor: "text-[hsl(210,70%,50%)]" },
+  { key: "appearance", icon: Palette, label: "Appearance", description: "Theme, Layout", iconColor: "text-[hsl(25,85%,55%)]" },
+  { key: "data", icon: Download, label: "Data & Export", description: "Backup, Export", iconColor: "text-[hsl(190,70%,45%)]" },
+  { key: "language", icon: Globe, label: "Language", description: "English", iconColor: "text-[hsl(280,55%,60%)]" },
 ];
 
 const SettingsPage = () => {
