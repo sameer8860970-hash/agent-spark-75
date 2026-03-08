@@ -6,8 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
-  { icon: MessageSquare, path: "/", label: "Chat" },
+  { icon: MessageSquare, path: "/", label: "Chats" },
   { icon: Bot, path: "/agents", label: "Agents" },
+  { icon: Settings, path: "/settings", label: "Settings" },
   { icon: Layers, path: "/jobs", label: "Jobs" },
 ];
 
@@ -88,39 +89,27 @@ const AppSidebar = () => {
         <NavContent />
       </div>
 
-      {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background flex items-center justify-around px-2 py-1.5 safe-area-bottom">
+      {/* Mobile bottom nav - Telegram style */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background flex items-center justify-around px-4 pt-1.5 pb-1 safe-area-bottom">
         {navItems.map((item) => {
           const isActive = item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
           return (
-            <Link key={item.path} to={item.path} className="flex-1 flex flex-col items-center gap-0.5 py-1">
-              <item.icon
-                size={20}
-                strokeWidth={1.5}
-                className={cn(
-                  "transition-colors",
-                  isActive ? "text-foreground" : "text-muted-foreground"
-                )}
-              />
-              <span className={cn("text-[10px]", isActive ? "text-foreground font-medium" : "text-muted-foreground")}>
+            <Link key={item.path} to={item.path} className="flex flex-col items-center gap-0.5 py-1 min-w-[56px]">
+              <div className={cn(
+                "w-10 h-7 flex items-center justify-center rounded-full transition-colors",
+                isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+              )}>
+                <item.icon size={20} strokeWidth={1.5} />
+              </div>
+              <span className={cn(
+                "text-[10px] leading-tight",
+                isActive ? "text-primary font-semibold" : "text-muted-foreground"
+              )}>
                 {item.label}
               </span>
             </Link>
           );
         })}
-        <Link to="/settings" className="flex-1 flex flex-col items-center gap-0.5 py-1">
-          <Settings
-            size={20}
-            strokeWidth={1.5}
-            className={cn(
-              "transition-colors",
-              location.pathname === "/settings" ? "text-foreground" : "text-muted-foreground"
-            )}
-          />
-          <span className={cn("text-[10px]", location.pathname === "/settings" ? "text-foreground font-medium" : "text-muted-foreground")}>
-            Settings
-          </span>
-        </Link>
       </div>
     </>
   );
