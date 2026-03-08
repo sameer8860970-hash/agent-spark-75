@@ -172,8 +172,14 @@ const ChatPage = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const lastMsgContent = messages[messages.length - 1]?.content;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    requestAnimationFrame(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
+    });
   }, [messages.length, isLoading, activeThinkingSteps, lastMsgContent]);
 
   const handleSend = async (content: string, attachedIntegrations: Integration[]) => {
