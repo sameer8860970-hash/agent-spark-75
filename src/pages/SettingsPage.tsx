@@ -94,7 +94,7 @@ const SettingsPage = () => {
   ];
 
   const MenuView = () => (
-    <div className="flex-1 overflow-auto bg-muted/40">
+    <div className="flex-1 overflow-auto bg-background">
       {/* Profile Header */}
       <div className="relative pt-8 pb-6">
         <div className="flex flex-col items-center">
