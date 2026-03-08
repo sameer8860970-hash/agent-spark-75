@@ -401,6 +401,7 @@ const ChatPage = () => {
                       <div className="bg-accent rounded-2xl rounded-br-sm px-3.5 py-2">
                         <p className="text-sm text-foreground">{msg.content}</p>
                       </div>
+                      <p className="text-[10px] text-muted-foreground mt-1 text-right">{formatTime(msg.timestamp)}</p>
                     </div>
                   ) : (
                     <div className="flex gap-2.5">
