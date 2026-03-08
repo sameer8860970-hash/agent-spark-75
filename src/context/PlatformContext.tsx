@@ -189,6 +189,8 @@ interface PlatformContextType {
   setIntegrations: React.Dispatch<React.SetStateAction<Integration[]>>;
   jobs: Job[];
   setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
+  knowledgeContext: string;
+  setKnowledgeContext: React.Dispatch<React.SetStateAction<string>>;
   toggleIntegration: (id: string) => void;
   addAgent: (agent: Agent) => void;
   updateAgent: (agent: Agent) => void;
