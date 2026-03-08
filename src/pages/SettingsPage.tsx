@@ -322,6 +322,41 @@ const SettingsPage = () => {
                   </div>
                 </div>
 
+                <div className="border border-border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <FileText size={14} className="text-foreground" />
+                      <p className="text-sm font-medium text-foreground">Knowledge Context (.md)</p>
+                    </div>
+                    <button
+                      onClick={() => setMdPreview(!mdPreview)}
+                      className="text-[10px] px-2 py-0.5 rounded border border-border text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {mdPreview ? "Edit" : "Preview"}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    Write markdown with context the AI should know before responding — company info, project details, preferences.
+                  </p>
+                  {mdPreview ? (
+                    <div className="min-h-[160px] border border-border rounded-lg p-3 bg-accent/30">
+                      {knowledgeContext.trim() ? (
+                        <ChatMarkdown content={knowledgeContext} />
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">Nothing written yet.</p>
+                      )}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={knowledgeContext}
+                      onChange={(e) => setKnowledgeContext(e.target.value)}
+                      placeholder={`# My Company\n\nWe are a SaaS platform for...\n\n## Key Products\n- Product A: does X\n- Product B: does Y\n\n## Preferences\n- Always respond in bullet points\n- Use metric units`}
+                      rows={10}
+                      className="w-full px-3 py-2 text-xs border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none font-mono leading-relaxed"
+                    />
+                  )}
+                </div>
+
                 <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} className="px-4 py-2 text-sm font-medium bg-foreground text-primary-foreground rounded-lg hover:opacity-90 transition-opacity">
                   Save Brain Settings
                 </motion.button>
