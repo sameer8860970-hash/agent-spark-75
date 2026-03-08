@@ -7,6 +7,8 @@ import { getIntegrationLogo } from "@/lib/integrationLogos";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
+import { streamChat } from "@/lib/streamChat";
+import { toast } from "sonner";
 import type { Integration } from "@/context/PlatformContext";
 
 interface ThinkingStep {
@@ -173,7 +175,7 @@ const ChatPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, activeThinkingSteps]);
 
-  const handleSend = (content: string, attachedIntegrations: Integration[]) => {
+  const handleSend = async (content: string, attachedIntegrations: Integration[]) => {
     attachedIntegrations.forEach((int) => {
       const existing = integrations.find((i) => i.id === int.id);
       if (existing && !existing.connected) {
@@ -191,55 +193,82 @@ const ChatPage = () => {
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
-    // Generate thinking steps
+    // Show thinking steps
     const thinkingSteps = generateThinkingSteps(content, attachedIntegrations);
     setActiveThinkingSteps([]);
-    setActiveExploreSummary("");
+    setActiveExploreSummary("Processing...");
 
-    // Animate steps appearing one by one
-    const fileCount = Math.floor(Math.random() * 8) + 3;
-    const searchCount = thinkingSteps.filter((s) => s.icon === "search").length;
-
+    // Animate steps appearing
     thinkingSteps.forEach((s, i) => {
       setTimeout(() => {
         setActiveThinkingSteps((prev) => [...prev, s]);
-        setActiveExploreSummary(
-          `Explored ${fileCount} files${searchCount > 0 ? `, ${searchCount} searches` : ""}`
-        );
-      }, 300 + i * 500);
+      }, 200 + i * 300);
     });
 
-    // Mark steps as done and produce final response
-    const totalThinkingTime = 300 + thinkingSteps.length * 500 + 400;
+    // Build message history for API
+    const apiMessages = [...messages, userMsg].map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content,
+    }));
 
-    setTimeout(() => {
-      // Mark all steps as done
+    let assistantContent = "";
+    const assistantId = crypto.randomUUID();
+
+    const markStepsDone = () => {
       setActiveThinkingSteps((prev) => prev.map((s) => ({ ...s, status: "done" as const })));
-    }, totalThinkingTime - 200);
+    };
 
-    setTimeout(() => {
-      const intNames = attachedIntegrations.map((i) => i.name).join(", ");
-      const hasContext = knowledgeContext.trim().length > 0;
-      const contextNote = hasContext ? `\n\n> 📄 *Used your knowledge context for personalization.*` : "";
-      const responseContent = attachedIntegrations.length > 0
-        ? `✅ Connected to **${intNames}** successfully!\n\nI'll use ${attachedIntegrations.length > 1 ? "these integrations" : "this integration"} to help with your request.\n\n${content ? `Regarding "${content}" — I've analyzed the data and here are the results.` : "What would you like me to do with this integration?"}${contextNote}`
-        : `${content}\n\nI've processed your request. Type **@** to connect integrations like Slack, WhatsApp, Gmail for enhanced capabilities.${contextNote}`;
+    try {
+      await streamChat({
+        messages: apiMessages,
+        knowledgeContext: knowledgeContext.trim() || undefined,
+        onDelta: (chunk) => {
+          // On first token, mark steps done and create assistant message
+          if (assistantContent === "") {
+            markStepsDone();
+            const finalSteps = thinkingSteps.map((s) => ({ ...s, status: "done" as const }));
+            setActiveExploreSummary(`Explored ${thinkingSteps.length} sources`);
 
-      const finalExploreSummary = `Explored ${fileCount} files${searchCount > 0 ? `, ${searchCount} searches` : ""}`;
-      const finalSteps = thinkingSteps.map((s) => ({ ...s, status: "done" as const }));
-
-      setMessages((prev) => [...prev, {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: responseContent,
-        timestamp: new Date(),
-        thinkingSteps: finalSteps,
-        exploredSummary: finalExploreSummary,
-      }]);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: assistantId,
+                role: "assistant",
+                content: chunk,
+                timestamp: new Date(),
+                thinkingSteps: finalSteps,
+                exploredSummary: `Explored ${thinkingSteps.length} sources`,
+              },
+            ]);
+            assistantContent = chunk;
+          } else {
+            assistantContent += chunk;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId ? { ...m, content: assistantContent } : m
+              )
+            );
+          }
+        },
+        onDone: () => {
+          setIsLoading(false);
+          setActiveThinkingSteps([]);
+          setActiveExploreSummary("");
+        },
+        onError: (error) => {
+          toast.error(error);
+          setIsLoading(false);
+          setActiveThinkingSteps([]);
+          setActiveExploreSummary("");
+        },
+      });
+    } catch (e) {
+      console.error("Stream error:", e);
+      toast.error("Failed to connect to AI. Please try again.");
       setIsLoading(false);
       setActiveThinkingSteps([]);
       setActiveExploreSummary("");
-    }, totalThinkingTime);
+    }
   };
 
   const hasMessages = messages.length > 0;
