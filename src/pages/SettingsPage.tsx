@@ -113,7 +113,7 @@ const SettingsPage = () => {
             whileTap={{ scale: 0.97 }}
             className="w-full flex items-center gap-3.5 pl-4 pr-3 py-[11px] hover:bg-accent/60 transition-colors active:bg-accent border-b border-border/40 last:border-b-0"
           >
-            <item.icon size={20} className="text-muted-foreground flex-shrink-0" strokeWidth={1.6} />
+            <item.icon size={20} className={`${item.iconColor} flex-shrink-0`} strokeWidth={1.6} />
             <div className="flex-1 text-left min-w-0">
               <p className="text-[14px] font-normal text-foreground leading-tight">{item.label}</p>
               <p className="text-[11.5px] text-muted-foreground truncate leading-tight mt-0.5">{item.description}</p>
