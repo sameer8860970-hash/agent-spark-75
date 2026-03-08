@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Bot, Clock, Zap, Webhook, Trash2, ChevronRight } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
+import PullToRefresh from "@/components/PullToRefresh";
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
