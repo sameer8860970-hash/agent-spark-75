@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -79,7 +79,7 @@ const generateThinkingSteps = (content: string, attachedIntegrations: Integratio
   return steps;
 };
 
-const ThinkingPopup = ({ steps, exploredSummary, isActive }: { steps: ThinkingStep[]; exploredSummary: string; isActive: boolean }) => {
+const ThinkingPopup = forwardRef<HTMLDivElement, { steps: ThinkingStep[]; exploredSummary: string; isActive: boolean }>(({ steps, exploredSummary, isActive }, ref) => {
   const [expanded, setExpanded] = useState(isActive);
 
   return (
@@ -156,7 +156,8 @@ const ThinkingPopup = ({ steps, exploredSummary, isActive }: { steps: ThinkingSt
       </AnimatePresence>
     </motion.div>
   );
-};
+});
+ThinkingPopup.displayName = "ThinkingPopup";
 
 const ChatPage = () => {
   const { integrations, toggleIntegration, agents } = usePlatform();
