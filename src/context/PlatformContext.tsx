@@ -246,6 +246,7 @@ export const PlatformProvider = ({ children }: { children: ReactNode }) => {
         agents, setAgents,
         integrations, setIntegrations,
         jobs, setJobs,
+        knowledgeContext, setKnowledgeContext,
         toggleIntegration,
         addAgent, updateAgent, deleteAgent, toggleAgentStatus,
       }}
