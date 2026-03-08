@@ -171,9 +171,10 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const lastMsgContent = messages[messages.length - 1]?.content;
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading, activeThinkingSteps]);
+  }, [messages.length, isLoading, activeThinkingSteps, lastMsgContent]);
 
   const handleSend = async (content: string, attachedIntegrations: Integration[]) => {
     attachedIntegrations.forEach((int) => {
