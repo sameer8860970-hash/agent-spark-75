@@ -71,7 +71,7 @@ const JobsPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
+      <PullToRefresh onRefresh={handleRefresh} className="p-4 md:p-6 pb-24 md:pb-6">
         {/* Mobile: Card layout */}
         <div className="md:hidden grid gap-2.5">
           {filteredJobs.map((job, index) => (
