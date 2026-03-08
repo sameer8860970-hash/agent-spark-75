@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { motion } from "framer-motion";
 import type { Integration } from "@/context/PlatformContext";
 
@@ -8,7 +9,7 @@ interface IntegrationPickerProps {
   onClose: () => void;
 }
 
-const IntegrationPicker = ({ integrations, searchQuery, onSelect, onClose }: IntegrationPickerProps) => {
+const IntegrationPicker = forwardRef<HTMLDivElement, IntegrationPickerProps>(({ integrations, searchQuery, onSelect, onClose }, ref) => {
   const filtered = integrations.filter((i) =>
     i.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -83,6 +84,8 @@ const IntegrationPicker = ({ integrations, searchQuery, onSelect, onClose }: Int
       </div>
     </motion.div>
   );
-};
+});
+
+IntegrationPicker.displayName = "IntegrationPicker";
 
 export default IntegrationPicker;

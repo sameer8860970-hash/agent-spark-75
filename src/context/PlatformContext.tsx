@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import { getIntegrationLogo } from "@/lib/integrationLogos";
 
 export interface Integration {
   id: string;
@@ -46,28 +47,28 @@ export interface Job {
 }
 
 const INTEGRATIONS: Integration[] = [
-  { id: "slack", name: "Slack", icon: "💬", logo: "https://cdn.simpleicons.org/slack", color: "#4A154B", connected: false, category: "Messaging", description: "Send and receive messages in Slack channels" },
-  { id: "whatsapp", name: "WhatsApp", icon: "📱", logo: "https://cdn.simpleicons.org/whatsapp", color: "#25D366", connected: false, category: "Messaging", description: "WhatsApp Business API for messaging and files" },
-  { id: "gmail", name: "Gmail", icon: "✉️", logo: "https://cdn.simpleicons.org/gmail", color: "#EA4335", connected: false, category: "Email", description: "Send and receive emails via Gmail" },
-  { id: "outlook", name: "Outlook", icon: "📧", logo: "https://cdn.simpleicons.org/microsoftoutlook", color: "#0078D4", connected: false, category: "Email", description: "Microsoft Outlook email integration" },
-  { id: "drive", name: "Google Drive", icon: "📁", logo: "https://cdn.simpleicons.org/googledrive", color: "#4285F4", connected: false, category: "Storage", description: "Access and manage Google Drive files" },
-  { id: "s3", name: "AWS S3", icon: "🪣", logo: "https://cdn.simpleicons.org/amazons3", color: "#569A31", connected: false, category: "Storage", description: "Amazon S3 cloud storage" },
-  { id: "notion", name: "Notion", icon: "📝", logo: "https://cdn.simpleicons.org/notion/000000", color: "#000000", connected: false, category: "Productivity", description: "Read and write Notion pages and databases" },
-  { id: "github", name: "GitHub", icon: "🐙", logo: "https://cdn.simpleicons.org/github/000000", color: "#181717", connected: false, category: "Development", description: "Manage repos, issues, and pull requests" },
-  { id: "jira", name: "Jira", icon: "🔷", logo: "https://cdn.simpleicons.org/jira", color: "#0052CC", connected: false, category: "Project Management", description: "Track and manage Jira issues" },
-  { id: "hubspot", name: "HubSpot", icon: "🟠", logo: "https://cdn.simpleicons.org/hubspot", color: "#FF7A59", connected: false, category: "CRM", description: "CRM contacts, deals, and workflows" },
-  { id: "salesforce", name: "Salesforce", icon: "☁️", logo: "https://cdn.simpleicons.org/salesforce", color: "#00A1E0", connected: false, category: "CRM", description: "Salesforce CRM integration" },
-  { id: "twilio", name: "Twilio", icon: "📞", logo: "https://cdn.simpleicons.org/twilio", color: "#F22F46", connected: false, category: "Communication", description: "SMS, voice, and video communications" },
-  { id: "stripe", name: "Stripe", icon: "💳", logo: "https://cdn.simpleicons.org/stripe", color: "#635BFF", connected: false, category: "Payments", description: "Payment processing and billing" },
-  { id: "zapier", name: "Zapier", icon: "⚡", logo: "https://cdn.simpleicons.org/zapier", color: "#FF4A00", connected: false, category: "Automation", description: "Connect to 5000+ apps via Zapier" },
-  { id: "amplitude", name: "Amplitude", icon: "📊", logo: "https://cdn.simpleicons.org/amplitude", color: "#000000", connected: false, category: "Analytics", description: "Product analytics and user insights" },
-  { id: "postgres", name: "PostgreSQL", icon: "🐘", logo: "https://cdn.simpleicons.org/postgresql", color: "#4169E1", connected: false, category: "Database", description: "PostgreSQL database queries" },
-  { id: "mongodb", name: "MongoDB", icon: "🍃", logo: "https://cdn.simpleicons.org/mongodb", color: "#47A248", connected: false, category: "Database", description: "MongoDB document database" },
-  { id: "openai", name: "OpenAI", icon: "🤖", logo: "https://cdn.simpleicons.org/openai/000000", color: "#412991", connected: false, category: "AI Models", description: "GPT models for text generation" },
-  { id: "anthropic", name: "Anthropic", icon: "🧠", logo: "https://cdn.simpleicons.org/anthropic/000000", color: "#191919", connected: false, category: "AI Models", description: "Claude models for reasoning" },
-  { id: "telegram", name: "Telegram", icon: "✈️", logo: "https://cdn.simpleicons.org/telegram", color: "#26A5E4", connected: false, category: "Messaging", description: "Telegram Bot API integration" },
-  { id: "linkedin", name: "LinkedIn", icon: "💼", logo: "https://cdn.simpleicons.org/linkedin", color: "#0A66C2", connected: false, category: "Social", description: "Post updates and manage LinkedIn presence" },
-  { id: "x", name: "X (Twitter)", icon: "𝕏", logo: "https://cdn.simpleicons.org/x/000000", color: "#000000", connected: false, category: "Social", description: "Post tweets and monitor mentions" },
+  { id: "slack", name: "Slack", icon: "💬", logo: getIntegrationLogo("slack"), color: "#4A154B", connected: false, category: "Messaging", description: "Send and receive messages in Slack channels" },
+  { id: "whatsapp", name: "WhatsApp", icon: "📱", logo: getIntegrationLogo("whatsapp"), color: "#25D366", connected: false, category: "Messaging", description: "WhatsApp Business API for messaging and files" },
+  { id: "gmail", name: "Gmail", icon: "✉️", logo: getIntegrationLogo("gmail"), color: "#EA4335", connected: false, category: "Email", description: "Send and receive emails via Gmail" },
+  { id: "outlook", name: "Outlook", icon: "📧", logo: getIntegrationLogo("outlook"), color: "#0078D4", connected: false, category: "Email", description: "Microsoft Outlook email integration" },
+  { id: "drive", name: "Google Drive", icon: "📁", logo: getIntegrationLogo("drive"), color: "#4285F4", connected: false, category: "Storage", description: "Access and manage Google Drive files" },
+  { id: "s3", name: "AWS S3", icon: "🪣", logo: getIntegrationLogo("s3"), color: "#569A31", connected: false, category: "Storage", description: "Amazon S3 cloud storage" },
+  { id: "notion", name: "Notion", icon: "📝", logo: getIntegrationLogo("notion"), color: "#000000", connected: false, category: "Productivity", description: "Read and write Notion pages and databases" },
+  { id: "github", name: "GitHub", icon: "🐙", logo: getIntegrationLogo("github"), color: "#181717", connected: false, category: "Development", description: "Manage repos, issues, and pull requests" },
+  { id: "jira", name: "Jira", icon: "🔷", logo: getIntegrationLogo("jira"), color: "#0052CC", connected: false, category: "Project Management", description: "Track and manage Jira issues" },
+  { id: "hubspot", name: "HubSpot", icon: "🟠", logo: getIntegrationLogo("hubspot"), color: "#FF7A59", connected: false, category: "CRM", description: "CRM contacts, deals, and workflows" },
+  { id: "salesforce", name: "Salesforce", icon: "☁️", logo: getIntegrationLogo("salesforce"), color: "#00A1E0", connected: false, category: "CRM", description: "Salesforce CRM integration" },
+  { id: "twilio", name: "Twilio", icon: "📞", logo: getIntegrationLogo("twilio"), color: "#F22F46", connected: false, category: "Communication", description: "SMS, voice, and video communications" },
+  { id: "stripe", name: "Stripe", icon: "💳", logo: getIntegrationLogo("stripe"), color: "#635BFF", connected: false, category: "Payments", description: "Payment processing and billing" },
+  { id: "zapier", name: "Zapier", icon: "⚡", logo: getIntegrationLogo("zapier"), color: "#FF4A00", connected: false, category: "Automation", description: "Connect to 5000+ apps via Zapier" },
+  { id: "amplitude", name: "Amplitude", icon: "📊", logo: getIntegrationLogo("amplitude"), color: "#000000", connected: false, category: "Analytics", description: "Product analytics and user insights" },
+  { id: "postgres", name: "PostgreSQL", icon: "🐘", logo: getIntegrationLogo("postgres"), color: "#4169E1", connected: false, category: "Database", description: "PostgreSQL database queries" },
+  { id: "mongodb", name: "MongoDB", icon: "🍃", logo: getIntegrationLogo("mongodb"), color: "#47A248", connected: false, category: "Database", description: "MongoDB document database" },
+  { id: "openai", name: "OpenAI", icon: "🤖", logo: getIntegrationLogo("openai"), color: "#412991", connected: false, category: "AI Models", description: "GPT models for text generation" },
+  { id: "anthropic", name: "Anthropic", icon: "🧠", logo: getIntegrationLogo("anthropic"), color: "#191919", connected: false, category: "AI Models", description: "Claude models for reasoning" },
+  { id: "telegram", name: "Telegram", icon: "✈️", logo: getIntegrationLogo("telegram"), color: "#26A5E4", connected: false, category: "Messaging", description: "Telegram Bot API integration" },
+  { id: "linkedin", name: "LinkedIn", icon: "💼", logo: getIntegrationLogo("linkedin"), color: "#0A66C2", connected: false, category: "Social", description: "Post updates and manage LinkedIn presence" },
+  { id: "x", name: "X (Twitter)", icon: "𝕏", logo: getIntegrationLogo("x"), color: "#000000", connected: false, category: "Social", description: "Post tweets and monitor mentions" },
 ];
 
 const SAMPLE_AGENTS: Agent[] = [
