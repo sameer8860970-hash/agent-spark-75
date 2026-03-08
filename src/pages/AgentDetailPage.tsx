@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Play, Pause, Clock, Webhook, Zap, Settings, Activity, FileText } from "lucide-react";
 import { usePlatform } from "@/context/PlatformContext";
+import { getIntegrationLogo } from "@/lib/integrationLogos";
 import { useState } from "react";
 
 const stepTypeStyles: Record<string, string> = {
@@ -151,7 +152,12 @@ const AgentDetailPage = () => {
                     <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-accent text-muted-foreground">
                       {stepTypeLabels[step.type]}
                     </span>
-                    {step.tool && <span className="text-xs text-muted-foreground">via {step.tool}</span>}
+                    {step.tool && (
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <img src={getIntegrationLogo(step.tool)} alt={step.tool} className="w-3 h-3" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        via {step.tool}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-foreground">{step.label}</p>
                 </div>
@@ -222,7 +228,10 @@ const AgentDetailPage = () => {
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Connected Integrations</label>
               <div className="flex flex-wrap gap-1.5">
                 {agent.integrations.map((intId) => (
-                  <span key={intId} className="px-2 py-1 text-xs bg-accent rounded-md text-foreground font-medium">{intId}</span>
+                  <span key={intId} className="inline-flex items-center gap-1.5 px-2 py-1 text-xs bg-accent rounded-md text-foreground font-medium">
+                    <img src={getIntegrationLogo(intId)} alt={intId} className="w-3.5 h-3.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    {intId}
+                  </span>
                 ))}
               </div>
             </div>

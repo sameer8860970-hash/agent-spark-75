@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { Plus, Activity, Clock, Webhook, Zap, ArrowUpRight } from "lucide-react";
+import { getIntegrationLogo } from "@/lib/integrationLogos";
 import ChatInput from "@/components/ChatInput";
 import { usePlatform } from "@/context/PlatformContext";
 import CreateAgentModal from "@/components/CreateAgentModal";
@@ -104,16 +105,6 @@ const ChatPage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {agents.slice(0, 6).map((agent, i) => {
                   const TriggerIcon = agent.trigger === "schedule" ? Clock : agent.trigger === "event" ? Webhook : Zap;
-                  const logos: Record<string, string> = {
-                    whatsapp: "https://cdn.simpleicons.org/whatsapp",
-                    slack: "https://cdn.simpleicons.org/slack",
-                    gmail: "https://cdn.simpleicons.org/gmail",
-                    jira: "https://cdn.simpleicons.org/jira",
-                    hubspot: "https://cdn.simpleicons.org/hubspot",
-                    amplitude: "https://cdn.simpleicons.org/amplitude",
-                    postgres: "https://cdn.simpleicons.org/postgresql",
-                    s3: "https://cdn.simpleicons.org/amazons3",
-                  };
                   return (
                     <motion.div
                       key={agent.id}
@@ -140,7 +131,7 @@ const ChatPage = () => {
                         <div className="flex items-center gap-0.5">
                           {agent.integrations.slice(0, 3).map((intId) => (
                             <div key={intId} className="w-4 h-4 rounded bg-agent-surface border border-border flex items-center justify-center">
-                              <img src={logos[intId] || `https://cdn.simpleicons.org/${intId}`} alt={intId} className="w-2.5 h-2.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                              <img src={getIntegrationLogo(intId)} alt={intId} className="w-2.5 h-2.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             </div>
                           ))}
                         </div>
