@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Clock, Webhook, Zap, Plus, Trash2, GripVertical, Sparkles, RotateCcw, FileOutput, TestTube } from "lucide-react";
+import {
+  X, Clock, Webhook, Zap, Plus, Trash2, GripVertical, Sparkles, RotateCcw,
+  FileOutput, Brain, Upload, Database, Shield, Globe, Terminal, Filter,
+  Eye, Key, RefreshCw
+} from "lucide-react";
 import { usePlatform, type Agent, type WorkflowStep } from "@/context/PlatformContext";
 
 interface CreateAgentModalProps {
@@ -25,13 +29,31 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
   const [steps, setSteps] = useState<WorkflowStep[]>([
     { id: "s1", type: "trigger", label: "", config: {} },
   ]);
-  // New fields
+
+  // Identity & Brain
+  const [persona, setPersona] = useState("Professional");
+  const [systemPrompt, setSystemPrompt] = useState("");
+  const [enableMemory, setEnableMemory] = useState(true);
+  const [responseLanguage, setResponseLanguage] = useState("English");
+
+  // Configuration
   const [model, setModel] = useState("gpt-4o");
   const [retryCount, setRetryCount] = useState("3");
   const [retryDelay, setRetryDelay] = useState("30");
   const [outputFormat, setOutputFormat] = useState("json");
   const [timeout, setTimeout_] = useState("300");
   const [logLevel, setLogLevel] = useState("info");
+  const [maxTokens, setMaxTokens] = useState("4096");
+  const [temperature, setTemperature] = useState("0.7");
+
+  // Security
+  const [enableContentFilter, setEnableContentFilter] = useState(true);
+  const [enablePiiRedaction, setEnablePiiRedaction] = useState(false);
+  const [ipAllowlist, setIpAllowlist] = useState("");
+
+  // Knowledge
+  const [knowledgeFiles, setKnowledgeFiles] = useState<string[]>([]);
+
   const [intSearch, setIntSearch] = useState("");
 
   const toggleIntegration = (id: string) => {
@@ -92,8 +114,9 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
     onClose();
   };
 
-  const totalSteps = 4;
+  const totalSteps = 6;
   const progress = (step / totalSteps) * 100;
+  const stepLabels = ["Details", "Identity & Brain", "Integrations", "Workflow", "Configuration", "Review"];
 
   const stepTypeColors: Record<string, string> = {
     trigger: "bg-status-pending-bg text-status-pending border-status-pending/30",
@@ -101,6 +124,19 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
     llm: "bg-status-done-bg text-status-done border-status-done/30",
     condition: "bg-accent text-muted-foreground border-border",
   };
+
+  const Toggle = ({ checked, onChange }: { checked: boolean; onChange: () => void }) => (
+    <button
+      onClick={onChange}
+      className={`w-9 h-[18px] rounded-full transition-colors relative ${checked ? "bg-status-done" : "bg-border"}`}
+    >
+      <motion.div
+        animate={{ x: checked ? 17 : 2 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        className="w-3.5 h-3.5 rounded-full bg-background shadow absolute top-[2px]"
+      />
+    </button>
+  );
 
   return (
     <motion.div
@@ -123,7 +159,7 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
           <div>
             <h2 className="font-semibold text-foreground text-sm">Create Agent</h2>
             <p className="text-[10px] text-muted-foreground mt-0.5">
-              Step {step} of {totalSteps} — {["Details", "Integrations", "Workflow", "Configuration"][step - 1]}
+              Step {step} of {totalSteps} — {stepLabels[step - 1]}
             </p>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-accent rounded-lg transition-colors text-muted-foreground">
@@ -203,19 +239,115 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
                       />
                     </motion.div>
                   )}
+                  {trigger === "event" && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Event Source</label>
+                      <select className="w-full px-3 py-2.5 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50">
+                        <option>Webhook (incoming HTTP)</option>
+                        <option>New Slack message</option>
+                        <option>New email received</option>
+                        <option>New CRM contact</option>
+                        <option>File uploaded</option>
+                      </select>
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </motion.div>
             )}
 
-            {/* Step 2: Integrations */}
+            {/* Step 2: Identity & Brain */}
             {step === 2 && (
-              <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-3">
+              <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Brain size={14} className="text-foreground" />
+                  <h3 className="text-xs font-semibold text-foreground">Agent Persona & Memory</h3>
+                </div>
+
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Select Integrations</label>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Personality Tone</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {["Professional", "Friendly", "Concise", "Technical", "Creative", "Custom"].map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => setPersona(p)}
+                        className={`px-2 py-1.5 text-[10px] font-medium rounded-md transition-all ${
+                          persona === p
+                            ? "bg-foreground text-primary-foreground"
+                            : "border border-border text-muted-foreground hover:bg-accent"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">System Prompt</label>
+                  <textarea
+                    value={systemPrompt}
+                    onChange={(e) => setSystemPrompt(e.target.value)}
+                    placeholder="You are a helpful assistant that..."
+                    rows={4}
+                    className="w-full px-3 py-2 text-xs border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 resize-none font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Response Language</label>
+                  <select
+                    value={responseLanguage}
+                    onChange={(e) => setResponseLanguage(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  >
+                    <option>English</option>
+                    <option>Auto-detect</option>
+                    <option>Spanish</option>
+                    <option>French</option>
+                    <option>German</option>
+                    <option>Japanese</option>
+                    <option>Chinese</option>
+                    <option>Arabic</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center justify-between border border-border rounded-lg p-2.5">
+                  <div>
+                    <p className="text-xs font-medium text-foreground flex items-center gap-1.5"><Database size={11} /> Long-Term Memory</p>
+                    <p className="text-[10px] text-muted-foreground">Remember context across sessions</p>
+                  </div>
+                  <Toggle checked={enableMemory} onChange={() => setEnableMemory(!enableMemory)} />
+                </div>
+
+                <div className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-foreground/20 transition-colors cursor-pointer">
+                  <Upload size={16} className="mx-auto text-muted-foreground mb-1.5" />
+                  <p className="text-[10px] font-medium text-foreground">Upload Knowledge Files</p>
+                  <p className="text-[9px] text-muted-foreground mt-0.5">PDF, TXT, MD, JSON · Max 50MB</p>
+                </div>
+
+                <div className="border border-border rounded-lg p-2.5 space-y-2">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Guardrails</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-foreground flex items-center gap-1.5"><Filter size={10} /> Content Safety Filter</p>
+                    <Toggle checked={enableContentFilter} onChange={() => setEnableContentFilter(!enableContentFilter)} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-foreground flex items-center gap-1.5"><Eye size={10} /> PII Redaction</p>
+                    <Toggle checked={enablePiiRedaction} onChange={() => setEnablePiiRedaction(!enablePiiRedaction)} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Integrations */}
+            {step === 3 && (
+              <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-3">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Select Connectors</label>
                   <input
                     value={intSearch}
                     onChange={(e) => setIntSearch(e.target.value)}
-                    placeholder="Search integrations..."
+                    placeholder="Search connectors..."
                     className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-shadow mb-2"
                   />
                 </div>
@@ -266,9 +398,9 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
               </motion.div>
             )}
 
-            {/* Step 3: Workflow */}
-            {step === 3 && (
-              <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-3">
+            {/* Step 4: Workflow */}
+            {step === 4 && (
+              <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-3">
                 <label className="text-xs font-medium text-muted-foreground block">Workflow Steps</label>
                 <div className="space-y-2">
                   {steps.map((s, i) => (
@@ -326,34 +458,59 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
               </motion.div>
             )}
 
-            {/* Step 4: Configuration */}
-            {step === 4 && (
-              <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-4">
+            {/* Step 5: Configuration */}
+            {step === 5 && (
+              <motion.div key="s5" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-4">
                 <div>
                   <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-3">
                     <Sparkles size={13} /> AI Model
                   </h3>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {[
-                      { value: "gpt-4o", label: "GPT-4o", desc: "Fast & smart" },
-                      { value: "claude-3.5", label: "Claude 3.5", desc: "Best reasoning" },
-                      { value: "gpt-4-turbo", label: "GPT-4 Turbo", desc: "High throughput" },
+                      { value: "gpt-4o", label: "GPT-4o", desc: "Fast & smart", provider: "OpenAI" },
+                      { value: "claude-3.5", label: "Claude 3.5", desc: "Best reasoning", provider: "Anthropic" },
+                      { value: "gpt-4-turbo", label: "GPT-4 Turbo", desc: "High throughput", provider: "OpenAI" },
+                      { value: "claude-3-haiku", label: "Claude Haiku", desc: "Fast & cheap", provider: "Anthropic" },
                     ].map((m) => (
                       <motion.button
                         key={m.value}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setModel(m.value)}
-                        className={`flex flex-col items-center gap-0.5 p-2.5 rounded-lg border text-xs transition-all ${
+                        className={`flex flex-col items-start gap-0.5 p-2.5 rounded-lg border text-xs transition-all ${
                           model === m.value
                             ? "border-foreground bg-accent text-foreground shadow-sm"
                             : "border-border text-muted-foreground hover:bg-accent/60"
                         }`}
                       >
                         <span className="font-medium">{m.label}</span>
-                        <span className="text-[9px] text-muted-foreground">{m.desc}</span>
+                        <span className="text-[9px] text-muted-foreground">{m.provider} · {m.desc}</span>
                       </motion.button>
                     ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Temperature</label>
+                    <input
+                      value={temperature}
+                      onChange={(e) => setTemperature(e.target.value)}
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="2"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Max Tokens</label>
+                    <input
+                      value={maxTokens}
+                      onChange={(e) => setMaxTokens(e.target.value)}
+                      type="number"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    />
                   </div>
                 </div>
 
@@ -428,21 +585,78 @@ const CreateAgentModal = ({ onClose }: CreateAgentModalProps) => {
                     ))}
                   </div>
                 </div>
+              </motion.div>
+            )}
 
-                {/* Summary */}
-                <div className="border border-border rounded-lg p-3 bg-accent/50 space-y-1.5">
-                  <p className="text-xs font-semibold text-foreground">Summary</p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
+            {/* Step 6: Review */}
+            {step === 6 && (
+              <motion.div key="s6" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }} className="space-y-4">
+                <h3 className="text-xs font-semibold text-foreground">Review & Create</h3>
+
+                <div className="border border-border rounded-lg p-3 space-y-2.5">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Agent Details</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                     <span className="text-muted-foreground">Name:</span>
                     <span className="text-foreground font-medium truncate">{name || "—"}</span>
                     <span className="text-muted-foreground">Trigger:</span>
                     <span className="text-foreground font-medium">{trigger} {trigger === "schedule" ? `(${schedule})` : ""}</span>
-                    <span className="text-muted-foreground">Integrations:</span>
-                    <span className="text-foreground font-medium">{selectedIntegrations.length || "None"}</span>
-                    <span className="text-muted-foreground">Steps:</span>
-                    <span className="text-foreground font-medium">{steps.length}</span>
+                    <span className="text-muted-foreground">Persona:</span>
+                    <span className="text-foreground font-medium">{persona}</span>
+                    <span className="text-muted-foreground">Memory:</span>
+                    <span className="text-foreground font-medium">{enableMemory ? "Enabled" : "Disabled"}</span>
+                  </div>
+                </div>
+
+                <div className="border border-border rounded-lg p-3 space-y-2.5">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Configuration</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                     <span className="text-muted-foreground">Model:</span>
                     <span className="text-foreground font-medium">{model}</span>
+                    <span className="text-muted-foreground">Temperature:</span>
+                    <span className="text-foreground font-medium">{temperature}</span>
+                    <span className="text-muted-foreground">Max Tokens:</span>
+                    <span className="text-foreground font-medium">{maxTokens}</span>
+                    <span className="text-muted-foreground">Retries:</span>
+                    <span className="text-foreground font-medium">{retryCount} (delay: {retryDelay}s)</span>
+                    <span className="text-muted-foreground">Timeout:</span>
+                    <span className="text-foreground font-medium">{timeout}s</span>
+                    <span className="text-muted-foreground">Output:</span>
+                    <span className="text-foreground font-medium">{outputFormat}</span>
+                    <span className="text-muted-foreground">Log Level:</span>
+                    <span className="text-foreground font-medium capitalize">{logLevel}</span>
+                  </div>
+                </div>
+
+                <div className="border border-border rounded-lg p-3 space-y-2.5">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Connectors & Workflow</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                    <span className="text-muted-foreground">Connectors:</span>
+                    <span className="text-foreground font-medium">{selectedIntegrations.length || "None"}</span>
+                    <span className="text-muted-foreground">Workflow Steps:</span>
+                    <span className="text-foreground font-medium">{steps.length}</span>
+                  </div>
+                  {selectedIntegrations.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedIntegrations.map((id) => {
+                        const int = integrations.find((i) => i.id === id);
+                        return int ? (
+                          <span key={id} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent text-[10px] font-medium text-foreground">
+                            <img src={int.logo} alt={int.name} className="w-2.5 h-2.5" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            {int.name}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="border border-border rounded-lg p-3 space-y-2.5">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Security</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                    <span className="text-muted-foreground">Content Filter:</span>
+                    <span className="text-foreground font-medium">{enableContentFilter ? "✅ Enabled" : "❌ Disabled"}</span>
+                    <span className="text-muted-foreground">PII Redaction:</span>
+                    <span className="text-foreground font-medium">{enablePiiRedaction ? "✅ Enabled" : "❌ Disabled"}</span>
                   </div>
                 </div>
               </motion.div>
